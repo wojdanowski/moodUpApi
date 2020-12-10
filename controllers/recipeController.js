@@ -7,7 +7,16 @@ exports.getRecipe = factory.getOne(Recipe);
 exports.createRecipe = factory.createOne(Recipe);
 
 exports.getAllRecipes = catchAsync(async (req, res, next) => {
-	const doc = await Recipe.find({ author: '5fd2689c081e33f052b9fdc7' });
+	// const doc = await Recipe.find({
+	// 	author: '5fd2689c081e33f052b9fdc7',
+	// }).select('+name +prepTime');
+
+	const doc = await Recipe.find(
+		{
+			author: '5fd2689c081e33f052b9fdc7',
+		},
+		'name prepTime'
+	);
 
 	res.status(200).json({
 		status: 'success',
