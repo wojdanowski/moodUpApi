@@ -9,10 +9,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 console.log(process.env.NODE_ENV);
 
+// ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {
 	res.send('Hello from server');
 });
-
 app.use('/api/v1/recipes', recipeRouter);
 
 module.exports = app;
