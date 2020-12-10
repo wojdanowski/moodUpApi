@@ -23,7 +23,7 @@ const recipeSchema = new mongoose.Schema(
 			trim: true,
 			maxlength: [
 				10,
-				'A recipe short description must have less or equal 40 characters',
+				'A recipe short description must have less or equal 10 characters',
 			],
 			minlength: [
 				1000,
@@ -31,17 +31,17 @@ const recipeSchema = new mongoose.Schema(
 			],
 		},
 		prepTime: {
-			type: Number,
+			type: String,
 			required: [true, 'A recipe must have a preparation time'],
 			unique: false,
 			trim: true,
 			maxlength: [
 				10,
-				'A recipe short description must have less or equal 40 characters',
+				'A recipe preparation time must have less or equal 10 characters',
 			],
 			minlength: [
-				1000,
-				'A recipe short description must have more or equal 1000 characters',
+				3,
+				'A recipe short description must have more or equal 3 characters',
 			],
 		},
 		prepSteps: [
