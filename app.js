@@ -9,6 +9,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 console.log(process.env.NODE_ENV);
 
+app.use(express.json({ limit: '10kb' }));
+
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {
 	res.send('Hello from server');
