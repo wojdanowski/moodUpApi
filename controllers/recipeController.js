@@ -5,6 +5,7 @@ const AppError = require('./../utils/appError');
 
 exports.getRecipe = factory.getOne(Recipe);
 exports.createRecipe = factory.createOne(Recipe);
+exports.updateRecipe = factory.updateOne(Recipe);
 
 exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	const doc = await Recipe.find(
