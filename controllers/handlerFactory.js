@@ -4,6 +4,10 @@ exports.getOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const doc = await Model.findById(req.params.id);
 
+		if (!doc) {
+			return next(new AppError('No document found with that ID', 404));
+		}
+
 		res.status(200).json({
 			status: 'success',
 			data: {
@@ -12,18 +16,22 @@ exports.getOne = (Model) =>
 		});
 	});
 
-// exports.getAll = (Model) =>
-// 	catchAsync(async (req, res, next) => {
-// 		const doc = await Model.find();
+exports.getAll = (Model) =>
+	catchAsync(async (req, res, next) => {
+		const doc = await Model.find();
 
-// 		res.status(200).json({
-// 			status: 'success',
-// 			results: doc.length,
-// 			data: {
-// 				data: doc,
-// 			},
-// 		});
-// 	});
+		if (!doc) {
+			return next(new AppError('No document found', 404));
+		}
+
+		res.status(200).json({
+			status: 'success',
+			results: doc.length,
+			data: {
+				data: doc,
+			},
+		});
+	});
 
 exports.createOne = (Model) =>
 	catchAsync(async (req, res, next) => {
