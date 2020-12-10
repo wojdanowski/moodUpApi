@@ -7,6 +7,7 @@ const router = express.Router();
 //   .route('/')
 //   .get(tourController.getAllTours);
 
+router.route('/').get(recipeController.getAllRecipes);
 router.route('/:id').get(recipeController.getRecipe);
 
 module.exports = router;
