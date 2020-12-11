@@ -18,13 +18,19 @@ router
 
 router
 	.route('/:id')
-	.get(authController.restrictTo('admin', 'user'), recipeController.getRecipe)
+	.get(
+		authController.restrictTo('admin', 'user'),
+		authController.restrictToOwner,
+		recipeController.getRecipe
+	)
 	.patch(
 		authController.restrictTo('admin', 'user'),
+		authController.restrictToOwner,
 		recipeController.updateRecipe
 	)
 	.delete(
 		authController.restrictTo('admin', 'user'),
+		authController.restrictToOwner,
 		recipeController.deleteRecipe
 	);
 

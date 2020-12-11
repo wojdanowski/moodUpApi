@@ -3,27 +3,8 @@ const factory = require('./../controllers/handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
-exports.createRecipe = factory.createOne(Recipe);
-exports.updateRecipe = factory.updateOne(Recipe);
+exports.getRecipe = factory.getOne(Recipe);
 exports.deleteRecipe = factory.deleteOne(Recipe);
-
-exports.getRecipe = catchAsync(async (req, res, next) => {
-	if (!req.params) {
-		return next(new AppError('No Id provided', 400));
-	}
-	const doc = await Recipe.findById(req.params.id);
-	if (!doc) {
-		return next(new AppError('No document found with that ID', 404));
-	}
-	if (isOwnerOrAdmin(doc, req, next)) {
-		res.status(200).json({
-			status: 'success',
-			data: {
-				data: doc,
-			},
-		});
-	}
-});
 
 exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	const user = req.user._id;
@@ -35,34 +16,38 @@ exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	}
 });
 
-exports.deleteRecipe = catchAsync(async (req, res, next) => {
-	// if (!req.params) {
-	// 	return next(new AppError('No Id provided', 400));
-	// }
-	// const doc = await Recipe.findById(req.params.id);
-	// if (!doc) {
-	// 	return next(new AppError('No document found with that ID', 404));
-	// }
-	// if (isOwnerOrAdmin(doc, req, next)) {
-	// 	res.status(200).json({
-	// 		status: 'success',
-	// 		data: {
-	// 			data: doc,
-	// 		},
-	// 	});
-	// }
+exports.createRecipe = catchAsync(async (req, res, next) => {
+	const recipe = {
+		...req.body,
+		author: req.user._id,
+	};
+	const doc = await Recipe.create(recipe);
+
+	res.status(201).json({
+		status: 'success',
+		data: {
+			data: doc,
+		},
+	});
 });
 
-const isOwnerOrAdmin = (document, req, next) => {
-	const authorId = document.author.toString();
-	const userId = req.user._id.toString();
-	if (authorId !== userId && req.user.role !== 'admin') {
-		return next(
-			new AppError(
-				'You do not have permission to perform this action',
-				403
-			)
-		);
+exports.updateRecipe = catchAsync(async (req, res, next) => {
+	const author = await Recipe.findById(req.params.id, 'author');
+	const recipe = {
+		...req.body,
+		author: author._id,
+	};
+	const doc = await Recipe.findByIdAndUpdate(req.params.id, recipe, {
+		runValidators: true,
+	});
+	if (!doc) {
+		return next(new AppError('No document found with that ID', 404));
 	}
-	return true;
-};
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			data: doc,
+		},
+	});
+});

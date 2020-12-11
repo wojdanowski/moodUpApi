@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
 const { promisify } = require('util');
 const User = require('./../models/userModel');
+const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
 
 const signToken = (id) => {
@@ -115,3 +116,25 @@ exports.restrictTo = (...roles) => {
 		next();
 	};
 };
+
+exports.restrictToOwner = catchAsync(async (req, res, next) => {
+	if (!req.params) {
+		return next(new AppError('No Id provided', 400));
+	}
+	const docAuthor = await Recipe.findById(req.params.id, 'author');
+	if (!docAuthor) {
+		return next(new AppError('No document found with that ID', 404));
+	}
+	const authorId = docAuthor.author.toString();
+	const userId = req.user._id.toString();
+
+	if (authorId !== userId && req.user.role !== 'admin') {
+		return next(
+			new AppError(
+				'You do not have permission to perform this action',
+				403
+			)
+		);
+	}
+	next();
+});
