@@ -2,6 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const cookieParser = require('cookie-parser');
+const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -14,8 +17,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 console.log(process.env.NODE_ENV);
 
+app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
+app.use(mongoSanitize());
+app.use(xss());
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {
