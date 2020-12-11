@@ -49,6 +49,14 @@ const userSchema = new mongoose.Schema({
 	},
 });
 
+userSchema.pre('save', async function (next) {
+	// Hash the password with cost of 12
+	this.password = await bcrypt.hash(this.password, 12);
+	//  Delete the password confirm
+	this.passwordConfirm = undefined;
+	next();
+});
+
 // Show only active users.
 userSchema.pre(/^find/, function (next) {
 	this.find({ active: { $ne: false } });

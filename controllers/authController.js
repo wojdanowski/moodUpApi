@@ -66,6 +66,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
 	// 1) Getting token and check if it's there
+	console.log(`PROTECTING`);
 	let token;
 	if (
 		req.headers.authorization &&
@@ -75,7 +76,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 	} else if (req.cookies.jwt) {
 		token = req.cookies.jwt;
 	}
-
+	// console.log(token);
 	if (!token) {
 		return next(
 			new AppError(
@@ -87,9 +88,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 	// 2) Verification of token
 	const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-	console.log(decoded);
+	// console.log(decoded);
 
-	// 3) Check if user still exists
+	// // 3) Check if user still exists
 	const currentUser = await User.findById(decoded.id);
 	if (!currentUser) {
 		return next(new AppError('The user no longer exists.', 401));
@@ -97,5 +98,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 	// GRANT ACCESS TO PROTECTED ROUTE
 	req.user = currentUser;
+	// console.log(req.user);
 	next();
 });
