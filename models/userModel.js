@@ -49,15 +49,9 @@ const userSchema = new mongoose.Schema({
 	},
 });
 
-userSchema.pre('save', async function (next) {
-	// Only run this function if password was changed
-	// "this" refers to current document
-	if (!this.isModified('password')) return next();
-
-	// Hash the password with cost of 12
-	this.password = await bcrypt.hash(this.password, 12);
-	//  Delete the password confirm
-	this.passwordConfirm = undefined;
+// Show only active users.
+userSchema.pre(/^find/, function (next) {
+	this.find({ active: { $ne: false } });
 	next();
 });
 
@@ -68,13 +62,6 @@ userSchema.methods.correctPassword = async function (
 ) {
 	return await bcrypt.compare(candidatePassword, userPassword);
 };
-
-userSchema.pre('save', function (next) {
-	if (!this.isModified('password') || this.isNew) return next();
-	this.passwordChangedAt = Date.now() - 1000;
-	// -1000 because saving take some time an sometimes token is created first
-	next();
-});
 
 const User = mongoose.model('User', userSchema);
 
