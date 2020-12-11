@@ -8,12 +8,21 @@ router.use(authController.protect);
 
 router
 	.route('/')
-	.get(recipeController.getAllRecipes)
-	.post(recipeController.createRecipe);
+	.get(
+		authController.restrictTo('admin', 'user'),
+		recipeController.getAllRecipes
+	)
+	.post(
+		authController.restrictTo('admin', 'user'),
+		recipeController.createRecipe
+	);
 
 router
 	.route('/:id')
-	.get(recipeController.getRecipe)
-	.patch(recipeController.updateRecipe);
+	.get(authController.restrictTo('admin', 'user'), recipeController.getRecipe)
+	.patch(
+		authController.restrictTo('admin', 'user'),
+		recipeController.updateRecipe
+	);
 
 module.exports = router;
