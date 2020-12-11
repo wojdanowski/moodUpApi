@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const app = express();
 const cookieParser = require('cookie-parser');
 
+const globalErrorHandler = require('./controllers/errorController');
+const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
 const userRouter = require('./routes/userRoutes');
 
@@ -21,5 +23,12 @@ app.get('/', (req, res) => {
 });
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
+
+//  Handle wrong/undefined routs
+app.all('*', (req, res, next) => {
+	next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;
