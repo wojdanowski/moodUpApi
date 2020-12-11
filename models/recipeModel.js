@@ -68,11 +68,6 @@ const recipeSchema = new mongoose.Schema(
 	}
 );
 
-// recipeSchema.pre('findByIdAndUpdate', async function (next) {
-// 	author = author;
-// 	next();
-// });
-
 const Recipe = mongoose.model('Recipe', recipeSchema);
 
 module.exports = Recipe;
