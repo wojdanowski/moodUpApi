@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -17,6 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 console.log(process.env.NODE_ENV);
 
+app.use(cors());
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
