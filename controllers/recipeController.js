@@ -1,6 +1,7 @@
 const Recipe = require('./../models/recipeModel');
 const factory = require('./../controllers/handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
+const ApiFeatures = require('./../utils/apiFeatures');
 const AppError = require('./../utils/appError');
 
 exports.getRecipe = factory.getOne(Recipe);
@@ -9,10 +10,18 @@ exports.deleteRecipe = factory.deleteOne(Recipe);
 exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	const user = req.user._id;
 	const searchQuery = req.user.role === 'user' ? { author: user } : {};
-	const doc = await Recipe.find(searchQuery, 'name prepTime');
+
+	const features = new ApiFeatures(
+		Recipe.find(searchQuery, 'name prepTime'),
+		req.query
+	)
+		.search()
+		.paginate();
+
+	const doc = await features.query;
 
 	if (!doc) {
-		return next(new AppError('No document found with that ID', 404));
+		return next(new AppError('No document found', 404));
 	}
 
 	res.status(201).json({
