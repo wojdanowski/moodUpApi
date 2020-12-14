@@ -5,11 +5,12 @@ const upload = require('./../services/fileUpload');
 
 const singleUpload = upload.single('image');
 
-// router.use(authController.protect);
+router.use(authController.protect);
 
 router.post('/upload-image', function (req, res) {
 	singleUpload(req, res, function (err) {
-		return res.json({ imageUrl: req.file.location });
+		if (req.file.location) return res.json({ imageUrl: req.file.location });
+		return res.json({ message: 'fail' });
 	});
 });
 
