@@ -55,6 +55,7 @@ exports.updateRecipe = catchAsync(async (req, res, next) => {
 		author: author._id,
 	};
 	const doc = await Recipe.findByIdAndUpdate(req.params.id, recipe, {
+		new: true,
 		runValidators: true,
 	});
 	if (!doc) {
