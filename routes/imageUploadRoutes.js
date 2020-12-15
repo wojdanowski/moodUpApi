@@ -9,8 +9,8 @@ router.use(authController.protect);
 
 router.post('/upload-image', function (req, res) {
 	singleUpload(req, res, function (err) {
-		if (req.file.location) return res.json({ imageUrl: req.file.location });
-		return res.json({ message: 'fail' });
+		if (!req.file) return res.json({ message: 'fail' });
+		return res.json({ imageUrl: req.file.location });
 	});
 });
 

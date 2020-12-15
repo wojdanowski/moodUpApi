@@ -8,7 +8,7 @@ const recipeSchema = new mongoose.Schema(
 			unique: true,
 			trim: true,
 			maxlength: [
-				40,
+				100,
 				'A recipe name must have less or equal 40 characters',
 			],
 			minlength: [
@@ -22,7 +22,7 @@ const recipeSchema = new mongoose.Schema(
 			unique: false,
 			trim: true,
 			maxlength: [
-				1000,
+				3000,
 				'A recipe short description must have less or equal 1000 characters',
 			],
 			minlength: [
@@ -36,7 +36,7 @@ const recipeSchema = new mongoose.Schema(
 			unique: false,
 			trim: true,
 			maxlength: [
-				10,
+				50,
 				'A recipe preparation time must have less or equal 10 characters',
 			],
 			minlength: [
@@ -60,6 +60,10 @@ const recipeSchema = new mongoose.Schema(
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
 			required: [true, 'A recipe must have an author'],
+		},
+		image: {
+			type: String,
+			required: [true, 'A recipe must have an image'],
 		},
 	},
 	{
