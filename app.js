@@ -6,12 +6,20 @@ const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
 const userRouter = require('./routes/userRoutes');
 const imageUploadRouter = require('./routes/imageUploadRoutes');
+
+const limiter = rateLimit({
+	max: 600,
+	windowMs: 60 * 60 * 1000,
+	message: 'Too many requests from this Ip, please try again in an hour!',
+});
+app.use('/api', limiter);
 
 // Setting the development mode
 if (process.env.NODE_ENV === 'development') {
