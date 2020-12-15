@@ -12,7 +12,7 @@ exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	const searchQuery = req.user.role === 'user' ? { author: user } : {};
 
 	const features = new ApiFeatures(
-		Recipe.find(searchQuery, 'name prepTime'),
+		Recipe.find(searchQuery, 'name prepTime image'),
 		req.query
 	)
 		.search()

@@ -11,13 +11,14 @@ const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
 const userRouter = require('./routes/userRoutes');
+const imageUploadRouter = require('./routes/imageUploadRoutes');
 
 // Setting the development mode
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));
 }
 console.log(process.env.NODE_ENV);
-
+process.env.AWS_ACCESS_SECRET_KEY;
 app.use(cors());
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/images', imageUploadRouter);
 
 //  Handle wrong/undefined routs
 app.all('*', (req, res, next) => {
