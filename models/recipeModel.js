@@ -5,7 +5,7 @@ const recipeSchema = new mongoose.Schema(
 		name: {
 			type: String,
 			required: [true, 'A recipe must have a name'],
-			unique: true,
+			unique: false,
 			trim: true,
 			maxlength: [
 				100,
