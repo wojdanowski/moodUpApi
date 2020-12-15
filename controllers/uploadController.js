@@ -6,6 +6,7 @@ const singleUpload = upload.single('image');
 
 exports.uploadImage = catchAsync(async (req, res, next) => {
 	singleUpload(req, res, function (err) {
+		if (err) return next(new AppError('File Upload Error', 400));
 		if (!req.file) return next(new AppError('No file provided', 400));
 		res.status(201).json({
 			status: 'success',
