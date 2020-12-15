@@ -1,17 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('./../controllers/authController');
-const upload = require('./../services/fileUpload');
-
-const singleUpload = upload.single('image');
+const uploadController = require('./../controllers/uploadController');
 
 router.use(authController.protect);
 
-router.post('/upload-image', function (req, res) {
-	singleUpload(req, res, function (err) {
-		if (!req.file) return res.json({ message: 'fail' });
-		return res.json({ imageUrl: req.file.location });
-	});
-});
+router
+	.route('/upload-image')
+	.post(
+		authController.restrictTo('admin', 'user'),
+		uploadController.uploadImage
+	);
 
 module.exports = router;
