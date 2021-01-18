@@ -2,6 +2,8 @@ const express = require('express');
 const recipeController = require('./../controllers/recipeController');
 const authController = require('./../controllers/authController');
 const router = express.Router();
+const validators = require('./../validators/validation');
+const { param } = require('express-validator/check');
 
 router.use(authController.protect);
 
@@ -20,7 +22,8 @@ router
 	.route('/:id')
 	.get(
 		authController.restrictTo('admin', 'user'),
-		authController.restrictToOwner,
+		validators.validateId,
+		// authController.restrictToOwner,
 		recipeController.getRecipe
 	)
 	.patch(
