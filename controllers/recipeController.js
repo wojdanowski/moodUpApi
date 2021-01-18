@@ -5,6 +5,9 @@ const ApiFeatures = require('./../utils/apiFeatures');
 const AppError = require('./../utils/appError');
 const authController = require('./../controllers/authController');
 const { validationResult, matchedData } = require('express-validator');
+const {
+	StatusCodes
+} = require('http-status-codes')
 
 const deleteRecipe = factory.deleteOne(Recipe);
 
@@ -12,7 +15,7 @@ const getRecipe =	catchAsync(async (req, res, next) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			console.log(errors)
-		  return res.status(400).json({ errors: errors.array() });
+		  return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
 		}
 
 		const data = matchedData(req);
@@ -20,10 +23,10 @@ const getRecipe =	catchAsync(async (req, res, next) => {
 
 		const doc = await Recipe.findById(data.id);
 		if (!doc) {
-			return next(new AppError('No document found with that ID', 404));
+			return next(new AppError('No document found with that ID', StatusCodes.NOT_FOUND));
 		}
 
-		res.status(200).json({
+		res.status(StatusCodes.OK).json({
 			status: 'success',
 			data: {
 				data: doc,
@@ -48,7 +51,7 @@ const getAllRecipes = catchAsync(async (req, res, next) => {
 		return next(new AppError('No document found', 404));
 	}
 
-	res.status(201).json({
+	res.status(StatusCodes.OK).json({
 		status: 'success',
 		results: doc.length,
 		data: {
@@ -64,7 +67,7 @@ const createRecipe = catchAsync(async (req, res, next) => {
 	};
 	const doc = await Recipe.create(recipe);
 
-	res.status(201).json({
+	res.status(StatusCodes.CREATED).json({
 		status: 'success',
 		data: {
 			data: doc,
@@ -86,7 +89,7 @@ const updateRecipe = catchAsync(async (req, res, next) => {
 		return next(new AppError('No document found with that ID', 404));
 	}
 
-	res.status(200).json({
+	res.status(StatusCodes.OK).json({
 		status: 'success',
 		data: {
 			data: doc,
