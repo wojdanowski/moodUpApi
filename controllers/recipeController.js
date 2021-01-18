@@ -6,10 +6,9 @@ const AppError = require('./../utils/appError');
 const authController = require('./../controllers/authController');
 const { validationResult, matchedData } = require('express-validator');
 
-exports.deleteRecipe = factory.deleteOne(Recipe);
+const deleteRecipe = factory.deleteOne(Recipe);
 
-exports.getRecipe =	catchAsync(async (req, res, next) => {
-
+const getRecipe =	catchAsync(async (req, res, next) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			console.log(errors)
@@ -17,8 +16,7 @@ exports.getRecipe =	catchAsync(async (req, res, next) => {
 		}
 
 		const data = matchedData(req);
-
-		authController.restrictToOwner(req, res, next);
+		authController.restrictToOwner(req, res, ()=> {});
 
 		const doc = await Recipe.findById(data.id);
 		if (!doc) {
@@ -33,7 +31,7 @@ exports.getRecipe =	catchAsync(async (req, res, next) => {
 		});
 	});
 
-exports.getAllRecipes = catchAsync(async (req, res, next) => {
+const getAllRecipes = catchAsync(async (req, res, next) => {
 	const user = req.user._id;
 	const searchQuery = req.user.role === 'user' ? { author: user } : {};
 
@@ -59,7 +57,7 @@ exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	});
 });
 
-exports.createRecipe = catchAsync(async (req, res, next) => {
+const createRecipe = catchAsync(async (req, res, next) => {
 	const recipe = {
 		...req.body,
 		author: req.user._id,
@@ -74,7 +72,7 @@ exports.createRecipe = catchAsync(async (req, res, next) => {
 	});
 });
 
-exports.updateRecipe = catchAsync(async (req, res, next) => {
+const updateRecipe = catchAsync(async (req, res, next) => {
 	const author = await Recipe.findById(req.params.id, 'author');
 	const recipe = {
 		...req.body,
@@ -95,3 +93,11 @@ exports.updateRecipe = catchAsync(async (req, res, next) => {
 		},
 	});
 });
+
+module.exports = {
+	deleteRecipe,
+	getRecipe,
+	getAllRecipes,
+	createRecipe,
+	updateRecipe
+}
