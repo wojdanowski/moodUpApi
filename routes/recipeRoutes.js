@@ -23,7 +23,6 @@ router
 	.get(
 		authController.restrictTo('admin', 'user'),
 		validators.validateId,
-		// authController.restrictToOwner,
 		recipeController.getRecipe
 	)
 	.patch(

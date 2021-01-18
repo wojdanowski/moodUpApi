@@ -6,7 +6,6 @@ const AppError = require('./../utils/appError');
 const authController = require('./../controllers/authController');
 const { validationResult, matchedData } = require('express-validator');
 
-// exports.getRecipe = factory.getOne(Recipe);
 exports.deleteRecipe = factory.deleteOne(Recipe);
 
 exports.getRecipe =	catchAsync(async (req, res, next) => {
@@ -19,24 +18,7 @@ exports.getRecipe =	catchAsync(async (req, res, next) => {
 
 		const data = matchedData(req);
 
-		if (!req.params) {
-			return next(new AppError('No Id provided', 400));
-		}
-		const docAuthor = await Recipe.findById(req.params.id, 'author');
-		if (!docAuthor) {
-			return next(new AppError('No document found with that ID', 404));
-		}
-		const authorId = docAuthor.author.toString();
-		const userId = req.user._id.toString();
-	
-		if (authorId !== userId && req.user.role !== 'admin') {
-			return next(
-				new AppError(
-					'You do not have permission to perform this action',
-					403
-				)
-			);
-		}
+		authController.restrictToOwner(req, res, next);
 
 		const doc = await Recipe.findById(data.id);
 		if (!doc) {
