@@ -18,7 +18,7 @@ describe('Recipes', () => {
 				.get('/api/v1/recipes/')
 				.set('Authorization', `Bearer ${token}`)
 				.end((err, res) => {
-					res.should.have.status(200);
+					res.should.have.status(StatusCodes.OK);
 					res.body.should.be.a('object');
 					done();
 				});
