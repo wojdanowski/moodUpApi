@@ -1,27 +1,46 @@
 // Import the dependencies for testing
 const chai = require('chai');
-const app = require('../server').app;
 const chaiHttp = require('chai-http');
+const sinon = require('sinon');
 const { StatusCodes } = require('http-status-codes');
+const authController = require('./../controllers/authController');
+const decache = require('decache');
 
 // Configure chai
 chai.use(chaiHttp);
 chai.should();
 
-const token =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmZDM0NmRkYjVhODNmNDJmYzIyNjU2NSIsImlhdCI6MTYxMTA1OTgxNywiZXhwIjoxNjExOTIzODE3fQ.Q3zGeNybFthcPEDgfym9bS6rb6NJSbl6T1aTNrObVRU';
-
 describe('Recipes', () => {
 	describe('GET /', () => {
-		it('should get all recipes', (done) => {
-			chai.request(app)
-				.get('/api/v1/recipes/')
-				.set('Authorization', `Bearer ${token}`)
-				.end((err, res) => {
-					res.should.have.status(StatusCodes.OK);
-					res.body.should.be.a('object');
-					done();
+		let app;
+
+		beforeEach(function () {
+			sinon
+				.stub(authController, 'protect')
+				.callsFake((req, res, next) => {
+					req.user = {
+						id: '5fd346ddb5a83f42fc226565',
+						role: 'admin',
+					};
+					next();
 				});
+		});
+
+		beforeEach(function () {
+			decache('./../server');
+			console.log(`decache!!!!!`);
+			app = require('./../server').app;
+		});
+
+		afterEach(function () {
+			authController.protect.restore();
+		});
+
+		it('should get all recipes', async function () {
+			const response = await chai.request(app).get('/api/v1/recipes/');
+
+			response.should.have.status(StatusCodes.OK);
+			response.body.should.be.a('object');
 		});
 	});
 });
