@@ -3,25 +3,13 @@ const factory = require('./../controllers/handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const ApiFeatures = require('./../utils/apiFeatures');
 const AppError = require('./../utils/appError');
-const authController = require('./../controllers/authController');
-const { validationResult, matchedData } = require('express-validator');
 const { StatusCodes } = require('http-status-codes');
 
 const deleteRecipe = factory.deleteOne(Recipe);
 
 const getRecipe = catchAsync(async (req, res, next) => {
-	console.log(req);
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res
-			.status(StatusCodes.BAD_REQUEST)
-			.json({ errors: errors.array() });
-	}
+	const doc = req.validData && (await Recipe.findById(req.validData.id));
 
-	const data = matchedData(req);
-	authController.restrictToOwner(req, res, () => {});
-
-	const doc = await Recipe.findById(data.id);
 	if (!doc) {
 		return next(
 			new AppError(
