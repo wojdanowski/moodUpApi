@@ -41,7 +41,7 @@ const getAllRecipes = catchAsync(async (req, res, next) => {
 	const doc = await features.query;
 
 	if (!doc) {
-		return next(new AppError('No document found', 404));
+		return next(new AppError('No document found', StatusCodes.NOT_FOUND));
 	}
 
 	res.status(StatusCodes.OK).json({
@@ -79,7 +79,12 @@ const updateRecipe = catchAsync(async (req, res, next) => {
 		runValidators: true,
 	});
 	if (!doc) {
-		return next(new AppError('No document found with that ID', 404));
+		return next(
+			new AppError(
+				'No document found with that ID',
+				StatusCodes.NOT_FOUND
+			)
+		);
 	}
 
 	res.status(StatusCodes.OK).json({
