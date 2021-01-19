@@ -4,6 +4,7 @@ const { promisify } = require('util');
 const User = require('./../models/userModel');
 const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
+const { StatusCodes } = require('http-status-codes');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -45,7 +46,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 		role: 'user',
 	});
 
-	createSendToken(newUser, 201, res);
+	createSendToken(newUser, StatusCodes.CREATED, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -53,16 +54,23 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	//  1) Check if email and password exist
 	if (!email || !password) {
-		return next(new AppError('Please provide email and password', 400));
+		return next(
+			new AppError(
+				'Please provide email and password',
+				StatusCodes.BAD_REQUEST
+			)
+		);
 	}
 	//  2) Check if the user exist && if the password is correct
 	const user = await User.findOne({ email }).select('+password');
 	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError('Incorrect email or password', 401));
+		return next(
+			new AppError('Incorrect email or password', StatusCodes.BAD_REQUEST)
+		);
 	}
 
 	//  3) If everything is OK, send token to client
-	createSendToken(user, 200, res);
+	createSendToken(user, StatusCodes.OK, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -80,7 +88,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 		return next(
 			new AppError(
 				'You are not logged in! Please log in to get access.',
-				401
+				StatusCodes.UNAUTHORIZED
 			)
 		);
 	}
@@ -91,7 +99,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 	// // 3) Check if user still exists
 	const currentUser = await User.findById(decoded.id);
 	if (!currentUser) {
-		return next(new AppError('The user no longer exists.', 401));
+		return next(
+			new AppError('The user no longer exists.', StatusCodes.UNAUTHORIZED)
+		);
 	}
 
 	// GRANT ACCESS TO PROTECTED ROUTE
@@ -105,7 +115,7 @@ exports.restrictTo = (...roles) => {
 			return next(
 				new AppError(
 					'You do not have permission to perform this action',
-					403
+					StatusCodes.FORBIDDEN
 				)
 			);
 		}
@@ -115,11 +125,16 @@ exports.restrictTo = (...roles) => {
 
 exports.restrictToOwner = catchAsync(async (req, res, next) => {
 	if (!req.params) {
-		return next(new AppError('No Id provided', 400));
+		return next(new AppError('No Id provided', StatusCodes.BAD_REQUEST));
 	}
 	const docAuthor = await Recipe.findById(req.params.id, 'author');
 	if (!docAuthor) {
-		return next(new AppError('No document found with that ID', 404));
+		return next(
+			new AppError(
+				'No document found with that ID',
+				StatusCodes.NOT_FOUND
+			)
+		);
 	}
 	const authorId = docAuthor.author.toString();
 	const userId = req.user._id.toString();
@@ -128,7 +143,7 @@ exports.restrictToOwner = catchAsync(async (req, res, next) => {
 		return next(
 			new AppError(
 				'You do not have permission to perform this action',
-				403
+				StatusCodes.FORBIDDEN
 			)
 		);
 	}
