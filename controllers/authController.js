@@ -124,10 +124,11 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.restrictToOwner = catchAsync(async (req, res, next) => {
-	if (!req.params) {
+	if (!req.validData.id) {
 		return next(new AppError('No Id provided', StatusCodes.BAD_REQUEST));
 	}
-	const docAuthor = await Recipe.findById(req.params.id, 'author');
+
+	const docAuthor = await Recipe.findById(req.validData.id, 'author');
 	if (!docAuthor) {
 		return next(
 			new AppError(
