@@ -2,11 +2,10 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const cookieParser = require('cookie-parser');
-const xss = require('xss-clean');
-const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const { StatusCodes } = require('http-status-codes');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -29,10 +28,8 @@ console.log(process.env.NODE_ENV);
 process.env.AWS_ACCESS_SECRET_KEY;
 app.use(cors());
 app.use(helmet());
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
-app.use(mongoSanitize());
-app.use(xss());
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {
@@ -44,7 +41,12 @@ app.use('/api/v1/images', imageUploadRouter);
 
 //  Handle wrong/undefined routs
 app.all('*', (req, res, next) => {
-	next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+	next(
+		new AppError(
+			`Can't find ${req.originalUrl} on this server!`,
+			StatusCodes.NOT_FOUND
+		)
+	);
 });
 
 app.use(globalErrorHandler);

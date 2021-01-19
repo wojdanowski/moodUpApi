@@ -3,11 +3,31 @@ const factory = require('./../controllers/handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const ApiFeatures = require('./../utils/apiFeatures');
 const AppError = require('./../utils/appError');
+const { StatusCodes } = require('http-status-codes');
 
-exports.getRecipe = factory.getOne(Recipe);
-exports.deleteRecipe = factory.deleteOne(Recipe);
+const deleteRecipe = factory.deleteOne(Recipe);
 
-exports.getAllRecipes = catchAsync(async (req, res, next) => {
+const getRecipe = catchAsync(async (req, res, next) => {
+	const doc = req.validData && (await Recipe.findById(req.validData.id));
+
+	if (!doc) {
+		return next(
+			new AppError(
+				'No document found with that ID',
+				StatusCodes.NOT_FOUND
+			)
+		);
+	}
+
+	res.status(StatusCodes.OK).json({
+		status: 'success',
+		data: {
+			data: doc,
+		},
+	});
+});
+
+const getAllRecipes = catchAsync(async (req, res, next) => {
 	const user = req.user._id;
 	const searchQuery = req.user.role === 'user' ? { author: user } : {};
 
@@ -21,10 +41,10 @@ exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	const doc = await features.query;
 
 	if (!doc) {
-		return next(new AppError('No document found', 404));
+		return next(new AppError('No document found', StatusCodes.NOT_FOUND));
 	}
 
-	res.status(201).json({
+	res.status(StatusCodes.OK).json({
 		status: 'success',
 		results: doc.length,
 		data: {
@@ -33,14 +53,14 @@ exports.getAllRecipes = catchAsync(async (req, res, next) => {
 	});
 });
 
-exports.createRecipe = catchAsync(async (req, res, next) => {
+const createRecipe = catchAsync(async (req, res, next) => {
 	const recipe = {
 		...req.body,
 		author: req.user._id,
 	};
 	const doc = await Recipe.create(recipe);
 
-	res.status(201).json({
+	res.status(StatusCodes.CREATED).json({
 		status: 'success',
 		data: {
 			data: doc,
@@ -48,7 +68,7 @@ exports.createRecipe = catchAsync(async (req, res, next) => {
 	});
 });
 
-exports.updateRecipe = catchAsync(async (req, res, next) => {
+const updateRecipe = catchAsync(async (req, res, next) => {
 	const author = await Recipe.findById(req.params.id, 'author');
 	const recipe = {
 		...req.body,
@@ -59,13 +79,26 @@ exports.updateRecipe = catchAsync(async (req, res, next) => {
 		runValidators: true,
 	});
 	if (!doc) {
-		return next(new AppError('No document found with that ID', 404));
+		return next(
+			new AppError(
+				'No document found with that ID',
+				StatusCodes.NOT_FOUND
+			)
+		);
 	}
 
-	res.status(200).json({
+	res.status(StatusCodes.OK).json({
 		status: 'success',
 		data: {
 			data: doc,
 		},
 	});
 });
+
+module.exports = {
+	deleteRecipe,
+	getRecipe,
+	getAllRecipes,
+	createRecipe,
+	updateRecipe,
+};
