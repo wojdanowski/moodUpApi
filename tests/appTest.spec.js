@@ -2,7 +2,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const sinon = require('sinon');
 const { StatusCodes } = require('http-status-codes');
-const decache = require('decache');
 
 // Configure chai
 chai.use(chaiHttp);
