@@ -138,7 +138,7 @@ exports.restrictToOwner = catchAsync(async (req, res, next) => {
 		);
 	}
 	const authorId = docAuthor.author.toString();
-	const userId = req.user._id.toString();
+	const userId = req.user.id.toString();
 
 	if (authorId !== userId && req.user.role !== 'admin') {
 		return next(
