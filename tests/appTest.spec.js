@@ -55,7 +55,7 @@ describe('Recipes', () => {
 			const response = await chai
 				.request(app)
 				.get('/api/v1/recipes/5fd790724a7ab216!c8920315');
-			response.should.have.status(StatusCodes.NOT_FOUND);
+			response.should.have.status(StatusCodes.BAD_REQUEST);
 			response.body.should.be.a('object');
 		});
 	});
