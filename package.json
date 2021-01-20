@@ -9,7 +9,7 @@
     "start:dev": "SET NODE_ENV=development&& nodemon server.js",
     "start:prod": "SET NODE_ENV=production&& nodemon server.js",
     "debug": "ndb server.js",
-    "test": "mocha tests/*.spec.js --exit "
+    "test": "mocha tests/*.spec.js"
   },
   "author": "wojdanowski",
   "license": "ISC",
