@@ -1,6 +1,6 @@
 const { chai } = require('./test_config');
 const { StatusCodes } = require('http-status-codes');
-const { authMockup } = require('./authMock');
+const { authMockup } = require('./mocks/authMock');
 
 const BASE_URL = '/api/v1/recipes';
 const RECIPE_ID_CORRECT = '5fd790724a7ab216c8920314';
@@ -8,19 +8,18 @@ const RECIPE_ID_NOT_EXISTENT = '5fd790724a7ab216c8920315';
 const RECIPE_ID_WRONG = '5fd790724a7ab216!c8920315';
 
 describe('Recipes', () => {
-	let app;
-	let authController;
-	beforeEach(function () {
-		authController = require('./../controllers/authController');
-		authMockup(authController, 'isAuthenticated');
-		app = require('./../server').app;
-	});
-
-	afterEach(function () {
-		authController.isAuthenticated.restore();
-	});
-
 	describe('GET /', () => {
+		let app;
+		let authController;
+		beforeEach(function () {
+			authController = require('./../controllers/authController');
+			authMockup(authController, 'isAuthenticated');
+			app = require('./../server').app;
+		});
+
+		afterEach(function () {
+			authController.isAuthenticated.restore();
+		});
 		it('should get all recipes and return status code 200', async function () {
 			const response = await chai.request(app).get(BASE_URL);
 
