@@ -43,12 +43,6 @@ app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/images', imageUploadRouter);
 
-// debug
-app.use((req, res, next) => {
-	console.log(req.user);
-	console.log(req.session);
-});
-
 //  Handle wrong/undefined routs
 app.all('*', (req, res, next) => {
 	next(
