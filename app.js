@@ -6,7 +6,9 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { StatusCodes } = require('http-status-codes');
-
+const passport = require('passport');
+const { usePassportStrategies } = require('./passport/passport');
+const { BEARER } = require('./passport/strategies');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
@@ -30,6 +32,9 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
+
+app.use(passport.initialize());
+usePassportStrategies([BEARER]);
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {

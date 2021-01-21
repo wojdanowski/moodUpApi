@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
-const { promisify } = require('util');
+const passport = require('passport');
 const User = require('./../models/userModel');
 const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
 const { StatusCodes } = require('http-status-codes');
+const { BEARER } = require('./../passport/strategies');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -73,40 +74,8 @@ exports.login = catchAsync(async (req, res, next) => {
 	createSendToken(user, StatusCodes.OK, res);
 });
 
-exports.protect = catchAsync(async (req, res, next) => {
-	// 1) Getting token and check if it's there
-	let token;
-	if (
-		req.headers.authorization &&
-		req.headers.authorization.startsWith('Bearer')
-	) {
-		token = req.headers.authorization.split(' ')[1];
-	} else if (req.cookies.jwt) {
-		token = req.cookies.jwt;
-	}
-	if (!token) {
-		return next(
-			new AppError(
-				'You are not logged in! Please log in to get access.',
-				StatusCodes.UNAUTHORIZED
-			)
-		);
-	}
-
-	// 2) Verification of token
-	const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-	// // 3) Check if user still exists
-	const currentUser = await User.findById(decoded.id);
-	if (!currentUser) {
-		return next(
-			new AppError('The user no longer exists.', StatusCodes.UNAUTHORIZED)
-		);
-	}
-
-	// GRANT ACCESS TO PROTECTED ROUTE
-	req.user = currentUser;
-	next();
+exports.isAuthenticated = passport.authenticate(BEARER.name, {
+	session: false,
 });
 
 exports.restrictTo = (...roles) => {

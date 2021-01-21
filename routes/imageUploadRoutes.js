@@ -3,7 +3,7 @@ const router = express.Router();
 const authController = require('./../controllers/authController');
 const uploadController = require('./../controllers/uploadController');
 
-router.use(authController.protect);
+router.use(authController.isAuthenticated);
 
 router
 	.route('/upload-image')
