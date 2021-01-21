@@ -7,7 +7,8 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { StatusCodes } = require('http-status-codes');
 const passport = require('passport');
-
+const { usePassportStrategy } = require('./passport/passport');
+const { BEARER } = require('./passport/strategies');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
@@ -33,7 +34,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
 app.use(passport.initialize());
-require('./passport/passport');
+usePassportStrategy(BEARER);
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {

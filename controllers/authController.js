@@ -74,7 +74,9 @@ exports.login = catchAsync(async (req, res, next) => {
 	createSendToken(user, StatusCodes.OK, res);
 });
 
-exports.isAuthenticated = passport.authenticate(BEARER, { session: false });
+exports.isAuthenticated = passport.authenticate(BEARER.name, {
+	session: false,
+});
 
 exports.restrictTo = (...roles) => {
 	return (req, res, next) => {
