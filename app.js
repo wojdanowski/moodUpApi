@@ -33,7 +33,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
 app.use(passport.initialize());
-require('./config/passport');
+require('./passport/passport');
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {

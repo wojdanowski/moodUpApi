@@ -6,6 +6,7 @@ const User = require('./../models/userModel');
 const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
 const { StatusCodes } = require('http-status-codes');
+const { BEARER } = require('./../passport/strategies');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -74,7 +75,7 @@ exports.login = catchAsync(async (req, res, next) => {
 	createSendToken(user, StatusCodes.OK, res);
 });
 
-exports.isAuthenticated = passport.authenticate('bearer', { session: false });
+exports.isAuthenticated = passport.authenticate(BEARER, { session: false });
 
 exports.restrictTo = (...roles) => {
 	return (req, res, next) => {

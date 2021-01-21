@@ -3,6 +3,7 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 const User = require('./../models/userModel');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const { BEARER } = require('./strategies');
 
 const authorizeToken = async (req, accessToken, callback) => {
 	try {
@@ -32,7 +33,7 @@ const authorizeToken = async (req, accessToken, callback) => {
 };
 
 passport.use(
-	'bearer',
+	BEARER,
 	new BearerStrategy(
 		{
 			passReqToCallback: true,
