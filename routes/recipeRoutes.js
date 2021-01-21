@@ -4,7 +4,6 @@ const authController = require('./../controllers/authController');
 const router = express.Router();
 const validators = require('./../validators/validation');
 
-// router.use(authController.protect);
 router.use(authController.isAuthenticated);
 
 router
