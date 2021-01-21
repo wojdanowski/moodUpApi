@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { StatusCodes } = require('http-status-codes');
+const passport = require('passport');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -31,6 +32,9 @@ app.use(helmet());
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
+app.use(passport.initialize());
+require('./config/passport');
+
 // ROUTES ---------------------------------------------------
 app.get('/', (req, res) => {
 	res.send('Hello from server');
@@ -38,6 +42,12 @@ app.get('/', (req, res) => {
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/images', imageUploadRouter);
+
+// debug
+app.use((req, res, next) => {
+	console.log(req.user);
+	console.log(req.session);
+});
 
 //  Handle wrong/undefined routs
 app.all('*', (req, res, next) => {

@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
+const passport = require('passport');
+const BearerStrategy = require('passport-http-bearer').Strategy;
 const { promisify } = require('util');
 const User = require('./../models/userModel');
 const Recipe = require('./../models/recipeModel');
@@ -72,6 +74,35 @@ exports.login = catchAsync(async (req, res, next) => {
 	//  3) If everything is OK, send token to client
 	createSendToken(user, StatusCodes.OK, res);
 });
+
+exports.isAuthenticated = passport.authenticate('bearer', { session: false });
+
+exports.authorizeToken = async (req, accessToken, callback) => {
+	try {
+		// 2) Verification of token
+		const decoded = await promisify(jwt.verify)(
+			accessToken,
+			process.env.JWT_SECRET
+		);
+
+		// // 3) Check if user still exists
+		const currentUser = await User.findById(decoded.id);
+		if (!currentUser) {
+			return next(
+				new AppError(
+					'The user no longer exists.',
+					StatusCodes.UNAUTHORIZED
+				)
+			);
+		}
+
+		return callback(null, currentUser, {
+			scope: '*',
+		});
+	} catch (e) {
+		return callback(null, false);
+	}
+};
 
 exports.protect = catchAsync(async (req, res, next) => {
 	// 1) Getting token and check if it's there
