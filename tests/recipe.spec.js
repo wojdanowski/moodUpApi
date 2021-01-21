@@ -12,12 +12,12 @@ describe('Recipes', () => {
 	let authController;
 	beforeEach(function () {
 		authController = require('./../controllers/authController');
-		authMockup(authController);
+		authMockup(authController, 'isAuthenticated');
 		app = require('./../server').app;
 	});
 
 	afterEach(function () {
-		authController.protect.restore();
+		authController.isAuthenticated.restore();
 	});
 
 	describe('GET /', () => {
