@@ -1,6 +1,5 @@
-const { chai } = require('./test_config');
+const { chai, app } = require('./test_config');
 const { StatusCodes } = require('http-status-codes');
-const app = require('./../server').app;
 
 const BASE_URL = '/api/v1/recipes';
 const TOKEN_VALID =
