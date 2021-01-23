@@ -50,7 +50,10 @@ module.exports = (err, req, res, next) => {
 	err.status = err.status || 'error';
 	err.message = err.message;
 
-	if (process.env.NODE_ENV === 'development') {
+	if (
+		process.env.NODE_ENV === 'development' ||
+		process.env.NODE_ENV === 'test'
+	) {
 		sendErrorDev(err, res);
 	} else if (process.env.NODE_ENV === 'production') {
 		let error = { ...err };

@@ -26,8 +26,7 @@ app.use('/api', limiter);
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));
 }
-console.log(process.env.NODE_ENV);
-process.env.AWS_ACCESS_SECRET_KEY;
+
 app.use(cors());
 app.use(helmet());
 app.use(express.json({ limit: '100kb' }));
