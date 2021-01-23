@@ -11,7 +11,7 @@ describe('Recipes', () => {
 	describe('GET /', () => {
 		beforeEach(function () {
 			authController.isAuthenticated.callsFake((req, res, next) => {
-				console.log(`FAKE!!!!!!!!!!!!!!!!!`);
+				console.log(`FAKE IS AUTHENTICATED !!!!!!!!!!!!!!!!!!!!!!!`);
 				req.user = {
 					id: '5fd346ddb5a83f42fc226565',
 					role: 'admin',
