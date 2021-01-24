@@ -11,6 +11,10 @@ const stubbedIsAuthenticated = sinon.stub(authController, 'isAuthenticated');
 
 const { app } = require('./../server');
 
+beforeEach(function () {
+	stubbedIsAuthenticated.callsFake(originalIsAuthenticated);
+});
+
 module.exports = {
 	chai,
 	chaiHttp,

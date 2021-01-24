@@ -1,5 +1,4 @@
-const { chai, app } = require('./test_config');
-const authController = require('./../controllers/authController');
+const { chai, app, stubbedIsAuthenticated } = require('./test_config');
 const { StatusCodes } = require('http-status-codes');
 
 const BASE_URL = '/api/v1/recipes';
@@ -10,7 +9,7 @@ const RECIPE_ID_WRONG = '5fd790724a7ab216!c8920315';
 describe('Recipes', () => {
 	describe('GET /', () => {
 		beforeEach(function () {
-			authController.isAuthenticated.callsFake((req, res, next) => {
+			stubbedIsAuthenticated.callsFake((req, res, next) => {
 				console.log(`FAKE IS AUTHENTICATED !!!!!!!!!!!!!!!!!!!!!!!`);
 				req.user = {
 					id: '5fd346ddb5a83f42fc226565',

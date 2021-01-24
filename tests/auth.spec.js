@@ -1,6 +1,5 @@
-const { chai, originalIsAuthenticated, app } = require('./test_config');
+const { chai, app } = require('./test_config');
 const { StatusCodes } = require('http-status-codes');
-const authController = require('./../controllers/authController');
 
 const BASE_URL = '/api/v1/recipes';
 const TOKEN_VALID =
@@ -8,10 +7,6 @@ const TOKEN_VALID =
 
 describe('auth', () => {
 	describe('GET /', () => {
-		beforeEach(function () {
-			authController.isAuthenticated.callsFake(originalIsAuthenticated);
-		});
-
 		it('should return "Unauthorized", and status code 401 (no Authorization header)', async function () {
 			const response = await chai.request(app).get(BASE_URL);
 			response.should.have.status(StatusCodes.UNAUTHORIZED);
