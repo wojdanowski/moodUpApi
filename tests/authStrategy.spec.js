@@ -11,7 +11,7 @@ const VALID_USER = {
 };
 
 describe('auth', () => {
-	describe.only('GET /', () => {
+	describe('GET /', () => {
 		it('Should return user object', async function () {
 			const spy = sinon.spy(authorizeToken);
 			const result = await authorizeToken(
