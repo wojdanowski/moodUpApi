@@ -27,12 +27,9 @@ mongoose
 const port = process.env.PORT || 3000;
 let server;
 
-console.log(process.env.NODE_ENV !== 'test');
-if (process.NODE_ENV !== 'test') {
-	server = app.listen(port, () => {
-		console.log(`App running on port: ${port}...`);
-	});
-}
+server = app.listen(port, () => {
+	console.log(`App running on port: ${port}...`);
+});
 
 const exitHandler = terminate(server, {
 	coredump: false,

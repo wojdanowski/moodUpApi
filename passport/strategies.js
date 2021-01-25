@@ -43,4 +43,5 @@ const BEARER = {
 
 module.exports = {
 	BEARER,
+	authorizeToken,
 };
