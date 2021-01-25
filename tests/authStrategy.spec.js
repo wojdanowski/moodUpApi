@@ -21,6 +21,7 @@ describe('auth', () => {
 					return user;
 				}
 			);
+
 			chai.expect(result).to.be.a('object');
 			chai.assert(
 				result.role === VALID_USER.role,
@@ -40,7 +41,7 @@ describe('auth', () => {
 			);
 		});
 
-		it('Should return a false', async function () {
+		it('Should return a false when token is invalid', async function () {
 			const result = await authorizeToken(
 				null,
 				`${VALID_USER.token}MakeItWrongToken`,
@@ -48,6 +49,7 @@ describe('auth', () => {
 					return user;
 				}
 			);
+
 			chai.assert(result === false, `Result is not false`);
 		});
 	});
