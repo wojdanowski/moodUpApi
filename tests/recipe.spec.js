@@ -1,16 +1,18 @@
 const { chai, app, stubbedIsAuthenticated } = require('./test_config');
 const { StatusCodes } = require('http-status-codes');
-const { populateDB, getUserData } = require('./mockDb');
+const { getUserData, getDummyRecipe } = require('./mockDb');
 
 const BASE_URL = '/api/v1/recipes';
 const RECIPE_ID_NOT_EXISTENT = '5fd790724a7ab216c8920315';
 const RECIPE_ID_WRONG = 'testId';
 
 let dummyUser;
+let dummyRecipe;
 
 describe('Recipes', () => {
 	before(async function () {
 		dummyUser = await getUserData();
+		dummyRecipe = await getDummyRecipe();
 	});
 
 	describe('GET /', () => {
@@ -42,7 +44,7 @@ describe('Recipes', () => {
 		it('should get recipe with provided ID and return status code 200  ', async function () {
 			const response = await chai
 				.request(app)
-				.get(`${BASE_URL}/${dummyData.dummyRecipe._id}`);
+				.get(`${BASE_URL}/${dummyRecipe._id}`);
 
 			response.should.have.status(StatusCodes.OK);
 		});

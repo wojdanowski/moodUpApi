@@ -58,11 +58,17 @@ const getUserData = async () => {
 	};
 };
 
+getDummyRecipe = async () => {
+	const recipe = (await Recipe.find())[0];
+	return {
+		...recipe._doc,
+	};
+};
+
 module.exports = {
 	connect,
 	mongoFakeServer,
 	populateDB,
-	dummyRecipe,
-	dummyUser,
 	getUserData,
+	getDummyRecipe,
 };
