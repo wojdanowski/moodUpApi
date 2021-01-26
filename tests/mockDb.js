@@ -58,7 +58,7 @@ const getUserData = async () => {
 	};
 };
 
-getDummyRecipe = async () => {
+const getDummyRecipe = async () => {
 	const recipe = (await Recipe.find())[0];
 	return {
 		...recipe._doc,

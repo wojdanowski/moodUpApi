@@ -6,10 +6,11 @@ const BASE_URL = '/api/v1/recipes';
 const RECIPE_ID_NOT_EXISTENT = '5fd790724a7ab216c8920315';
 const RECIPE_ID_WRONG = 'testId';
 
-let dummyUser;
-let dummyRecipe;
-
 describe('Recipes', () => {
+	let dummyUser;
+	let dummyRecipe;
+	const EXPECTED_RECIPE_COUNT = 2;
+
 	before(async function () {
 		dummyUser = await getUserData();
 		dummyRecipe = await getDummyRecipe();
@@ -36,7 +37,7 @@ describe('Recipes', () => {
 			const response = await chai.request(app).get(BASE_URL);
 
 			chai.assert(
-				response.body.results === 2,
+				response.body.results === EXPECTED_RECIPE_COUNT,
 				'Returned invalid number of recipes from database'
 			);
 		});

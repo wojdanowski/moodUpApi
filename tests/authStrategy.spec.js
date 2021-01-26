@@ -3,8 +3,9 @@ const { chai } = require('./test_config');
 const { authorizeToken } = require('./../passport/strategies');
 const { getUserData } = require('./mockDb');
 
-let dummyUser;
 describe('auth', () => {
+	let dummyUser;
+
 	before(async function () {
 		dummyUser = await getUserData();
 	});
