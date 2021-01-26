@@ -2,14 +2,18 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const User = require('./../models/userModel');
-const redisUsers = require('./../server');
+const { redisClient } = require('./../redis');
 
 const authorizeToken = async (req, accessToken, callback) => {
 	try {
 		// Verify if token is in cache
-		await redis.set('foo', 'bar');
-		const redisRes = await redis.get('foo');
-		console.log(redisRes);
+		const payload = accessToken.split('.')[1];
+		console.log(payload);
+		// redisClient.set('foo', 'bar');
+		// // const redisRes = redisClient.get('foo');
+		// const redisRes = redisClient.get('fo2o', (err, reply) => {
+		// 	console.log(reply);
+		// });
 
 		// Verification of token
 		const decoded = await promisify(jwt.verify)(

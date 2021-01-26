@@ -14,7 +14,6 @@ const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
 const userRouter = require('./routes/userRoutes');
 const imageUploadRouter = require('./routes/imageUploadRoutes');
-
 const limiter = rateLimit({
 	max: 600,
 	windowMs: 60 * 60 * 1000,
