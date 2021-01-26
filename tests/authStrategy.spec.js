@@ -1,22 +1,19 @@
 const { chai } = require('./test_config');
-const sinon = require('sinon');
+
 const { authorizeToken } = require('./../passport/strategies');
+const { getUserData } = require('./mockDb');
 
-const VALID_USER = {
-	token:
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmZDM0NmRkYjVhODNmNDJmYzIyNjU2NSIsImlhdCI6MTYxMTIxNzk2MSwiZXhwIjoxNjEyMDgxOTYxfQ.ybTodaBJMPFJTqArn9ZtuGK_clrMwrusNnKRf7gcsRg',
-	role: 'admin',
-	_id: '5fd346ddb5a83f42fc226565',
-	email: 'admin@test.com',
-};
-
+let dummyUser;
 describe('auth', () => {
+	before(async function () {
+		dummyUser = await getUserData();
+	});
+
 	describe('GET /', () => {
 		it('Should return user object', async function () {
-			const spy = sinon.spy(authorizeToken);
 			const result = await authorizeToken(
 				null,
-				VALID_USER.token,
+				dummyUser.token,
 				(firstArg, user) => {
 					return user;
 				}
@@ -24,27 +21,27 @@ describe('auth', () => {
 
 			chai.expect(result).to.be.a('object');
 			chai.assert(
-				result.role === VALID_USER.role,
-				`User role is not ${VALID_USER.role}`
+				result.role === dummyUser.role,
+				`User role is not ${dummyUser.role}`
 			);
 			chai.assert(
-				result.admin === VALID_USER.admin,
-				`User admin is not ${VALID_USER.admin}`
+				result.admin === dummyUser.admin,
+				`User admin is not ${dummyUser.admin}`
 			);
 			chai.assert(
-				result._id.toString() === VALID_USER._id,
-				`User _id is not ${VALID_USER._id}`
+				result._id.toString() === dummyUser._id,
+				`User _id is not ${dummyUser._id}`
 			);
 			chai.assert(
-				result.email === VALID_USER.email,
-				`User email is not ${VALID_USER.email}`
+				result.email === dummyUser.email,
+				`User email is not ${dummyUser.email}`
 			);
 		});
 
 		it('Should return a false when token is invalid', async function () {
 			const result = await authorizeToken(
 				null,
-				`${VALID_USER.token}MakeItWrongToken`,
+				`${dummyUser.token}MakeItWrongToken`,
 				(firstArg, user) => {
 					return user;
 				}
