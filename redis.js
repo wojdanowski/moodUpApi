@@ -15,9 +15,11 @@ redisClient.on('connect', function () {
 
 const getAsync = promisify(redisClient.get).bind(redisClient);
 const setAsync = promisify(redisClient.set).bind(redisClient);
+const delAsync = promisify(redisClient.del).bind(redisClient);
 
 module.exports = {
 	redisClient,
 	getAsync,
 	setAsync,
+	delAsync,
 };

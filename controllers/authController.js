@@ -6,7 +6,8 @@ const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
 const { StatusCodes } = require('http-status-codes');
 const { BEARER } = require('./../passport/strategies');
-const { setAsync } = require('./../redis');
+const { setAsync, delAsync } = require('./../redis');
+const cookieParser = require('cookie-parser');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -28,6 +29,7 @@ const createSendToken = (user, statusCode, res) => {
 
 	// Remove the password from the output
 	user.password = undefined;
+
 	setAsync(token, JSON.stringify(user), 'EX', process.env.REDIS_EXPIRES_IN);
 
 	res.status(statusCode).json({
@@ -74,6 +76,29 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	//  3) If everything is OK, send token to client
 	createSendToken(user, StatusCodes.OK, res);
+});
+
+exports.logout = catchAsync(async (req, res, next) => {
+	let token;
+	if (req.headers.authorization) {
+		token = req.headers.authorization.split(' ')[1];
+	} else if (req.body.token) {
+		token = req.body.token;
+	} else if (req.cookies.jwt) {
+		token = req.cookies.jwt;
+	}
+
+	if (!token)
+		return next(new AppError('No token provided', StatusCodes.BAD_REQUEST));
+
+	const deletedRecords = await delAsync(token);
+
+	if (!deletedRecords)
+		return next(new AppError('User already logout', StatusCodes.NOT_FOUND));
+
+	res.status(StatusCodes.OK).json({
+		status: 'success',
+	});
 });
 
 exports.isAuthenticated = passport.authenticate(BEARER.name, {
