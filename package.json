@@ -9,18 +9,15 @@
     "start:dev": "SET NODE_ENV=development&& nodemon server.js",
     "start:prod": "SET NODE_ENV=production&& nodemon server.js",
     "debug": "ndb server.js",
-    "test": "mocha tests/*.spec.js"
+    "test": "mocha tests/*.spec.js --exit --timeout 60000"
   },
   "author": "wojdanowski",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "2.810.0",
     "bcryptjs": "2.4.3",
-    "chai": "4.2.0",
-    "chai-http": "4.3.0",
     "cookie-parser": "1.4.5",
     "cors": "2.8.5",
-    "decache": "4.6.0",
     "dotenv": "8.2.0",
     "express": "4.17.1",
     "express-mongo-sanitize": "2.0.1",
@@ -29,19 +26,25 @@
     "helmet": "4.2.0",
     "http-status-codes": "2.1.4",
     "jsonwebtoken": "8.5.1",
-    "mocha": "8.2.1",
     "mongoose": "5.11.6",
     "morgan": "1.10.0",
     "multer": "1.4.2",
     "multer-s3": "2.9.0",
     "passport": "0.4.1",
     "passport-http-bearer": "1.0.1",
-    "sinon": "9.2.3",
     "util": "0.12.3",
     "validator": "13.5.2",
     "xss-clean": "0.1.1"
   },
   "engines": {
     "node": "14.15.1"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.3.0",
+    "decache": "4.6.0",
+    "mocha": "8.2.1",
+    "mongodb-memory-server": "6.9.3",
+    "sinon": "9.2.3"
   }
 }

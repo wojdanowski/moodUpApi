@@ -25,6 +25,7 @@ mongoose
 	.then(() => console.log(`DB connection successful`));
 
 const port = process.env.PORT || 3000;
+
 const server = app.listen(port, () => {
 	console.log(`App running on port: ${port}...`);
 });
@@ -39,4 +40,6 @@ process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'));
 process.on('SIGTERM', exitHandler(0, 'SIGTERM'));
 process.on('SIGINT', exitHandler(0, 'SIGINT'));
 
-module.exports.app = app;
+module.exports = {
+	app,
+};
