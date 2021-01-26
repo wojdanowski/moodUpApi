@@ -7,7 +7,6 @@ const AppError = require('./../utils/appError');
 const { StatusCodes } = require('http-status-codes');
 const { BEARER } = require('./../passport/strategies');
 const { setAsync, delAsync } = require('./../redis');
-const cookieParser = require('cookie-parser');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
