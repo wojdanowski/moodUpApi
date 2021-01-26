@@ -6,6 +6,7 @@ const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
 const { StatusCodes } = require('http-status-codes');
 const { BEARER } = require('./../passport/strategies');
+const { setAsync } = require('./../redis');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -27,6 +28,7 @@ const createSendToken = (user, statusCode, res) => {
 
 	// Remove the password from the output
 	user.password = undefined;
+	setAsync(token, JSON.stringify(user), 'EX', process.env.REDIS_EXPIRES_IN);
 
 	res.status(statusCode).json({
 		status: 'success',
