@@ -13,18 +13,11 @@ const authorizeToken = async (req, accessToken, callback) => {
 
 		// // 3) Check if user still exists
 		const currentUser = await User.findById(decoded.id);
-		if (!currentUser) {
-			return next(
-				new AppError(
-					'The user no longer exists.',
-					StatusCodes.UNAUTHORIZED
-				)
-			);
+		if (currentUser) {
+			return callback(null, currentUser, {
+				scope: '*',
+			});
 		}
-
-		return callback(null, currentUser, {
-			scope: '*',
-		});
 	} catch (e) {
 		return callback(null, false);
 	}
