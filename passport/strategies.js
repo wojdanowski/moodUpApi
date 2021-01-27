@@ -2,13 +2,13 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const User = require('./../models/userModel');
-const { getAsync, setAsync } = require('./../redis');
+const { getFromCache, setToCache } = require('./../redis');
 
 const authorizeToken = async (req, accessToken, callback) => {
 	try {
 		// Verify if token is in cache
 		let currentUser;
-		const cachedUser = await getAsync(accessToken);
+		const cachedUser = await getFromCache(accessToken);
 		if (cachedUser) {
 			return callback(null, JSON.parse(cachedUser), {
 				scope: '*',
@@ -33,7 +33,7 @@ const authorizeToken = async (req, accessToken, callback) => {
 		}
 
 		// Cache user in redis and send response to client
-		await setAsync(
+		await setToCache(
 			accessToken,
 			JSON.stringify(currentUser),
 			'EX',
