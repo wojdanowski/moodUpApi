@@ -100,10 +100,6 @@ exports.logout = catchAsync(async (req, res, next) => {
 
 	const deletedRecords = await delFromCache(token);
 
-	if (!deletedRecords) {
-		return next(new AppError('User already logout', StatusCodes.OK));
-	}
-
 	res.status(StatusCodes.OK).json({
 		status: 'success',
 	});
