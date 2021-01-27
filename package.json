@@ -10,7 +10,7 @@
     "start:prod": "SET NODE_ENV=production&& nodemon ./src/server.js",
     "debug": "ndb server.js",
     "test": "ts-mocha ./src/tests/*.spec.js --exit --timeout 60000",
-    "nodemon:watch": "nodemon --watch './src/***.*' --exec 'ts-node' ./src/server.js"
+    "nodemon:watch": "nodemon --config './nodemon.json'"
   },
   "author": "wojdanowski",
   "license": "ISC",
@@ -41,8 +41,15 @@
     "node": "14.15.1"
   },
   "devDependencies": {
+    "@types/cookie-parser": "1.4.2",
+    "@types/cors": "2.8.9",
     "@types/expect": "24.3.0",
+    "@types/express": "4.17.11",
+    "@types/express-rate-limit": "5.1.1",
     "@types/mocha": "8.2.0",
+    "@types/morgan": "1.9.2",
+    "@types/node": "14.14.22",
+    "@types/passport": "1.0.5",
     "chai": "4.2.0",
     "chai-http": "4.3.0",
     "decache": "4.6.0",

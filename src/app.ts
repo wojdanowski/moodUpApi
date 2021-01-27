@@ -1,19 +1,21 @@
-const express = require('express');
-const morgan = require('morgan');
-const app = express();
-const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const { StatusCodes } = require('http-status-codes');
-const passport = require('passport');
-const { usePassportStrategies } = require('./passport/passport');
+import express from 'express';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import { StatusCodes } from 'http-status-codes';
+import passport from 'passport';
+
+import { usePassportStrategies } from './passport/passport';
 const { BEARER } = require('./passport/strategies');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
 const userRouter = require('./routes/userRoutes');
 const imageUploadRouter = require('./routes/imageUploadRoutes');
+
+const app = express();
 
 const limiter = rateLimit({
 	max: 600,
