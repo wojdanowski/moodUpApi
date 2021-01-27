@@ -98,7 +98,7 @@ exports.logout = catchAsync(async (req, res, next) => {
 		);
 	}
 
-	const deletedRecords = await delFromCache(token);
+	await delFromCache(token);
 
 	res.status(StatusCodes.OK).json({
 		status: 'success',
