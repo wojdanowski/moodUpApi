@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const User = require('./../models/userModel');
 
-const authorizeToken = async (req, accessToken, callback) => {
+const authorizeToken = async (req: any, accessToken: any, callback: any) => {
 	try {
 		// 2) Verification of token
 		const decoded = await promisify(jwt.verify)(
@@ -29,12 +29,9 @@ const BEARER = {
 		{
 			passReqToCallback: true,
 		},
-		(req, accessToken, callback) =>
+		(req: any, accessToken: any, callback: any) =>
 			authorizeToken(req, accessToken, callback)
 	),
 };
 
-module.exports = {
-	BEARER,
-	authorizeToken,
-};
+export { BEARER, authorizeToken };
