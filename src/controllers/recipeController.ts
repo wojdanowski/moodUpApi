@@ -1,13 +1,13 @@
 const Recipe = require('./../models/recipeModel');
-const factory = require('./../controllers/handlerFactory');
+import { deleteOne } from './../controllers/handlerFactory';
 const catchAsync = require('./../utils/catchAsync');
 const ApiFeatures = require('./../utils/apiFeatures');
-const AppError = require('./../utils/appError');
-const { StatusCodes } = require('http-status-codes');
+import AppError from './../utils/appError';
+import { StatusCodes } from 'http-status-codes';
 
-const deleteRecipe = factory.deleteOne(Recipe);
+const deleteRecipe = deleteOne(Recipe);
 
-const getRecipe = catchAsync(async (req, res, next) => {
+const getRecipe = catchAsync(async (req: any, res: any, next: any) => {
 	const doc = req.validData && (await Recipe.findById(req.validData.id));
 
 	if (!doc) {
@@ -27,7 +27,7 @@ const getRecipe = catchAsync(async (req, res, next) => {
 	});
 });
 
-const getAllRecipes = catchAsync(async (req, res, next) => {
+const getAllRecipes = catchAsync(async (req: any, res: any, next: any) => {
 	const user = req.user._id;
 	const searchQuery = req.user.role === 'user' ? { author: user } : {};
 
@@ -53,7 +53,7 @@ const getAllRecipes = catchAsync(async (req, res, next) => {
 	});
 });
 
-const createRecipe = catchAsync(async (req, res, next) => {
+const createRecipe = catchAsync(async (req: any, res: any, next: any) => {
 	const recipe = {
 		...req.body,
 		author: req.user._id,
@@ -68,7 +68,7 @@ const createRecipe = catchAsync(async (req, res, next) => {
 	});
 });
 
-const updateRecipe = catchAsync(async (req, res, next) => {
+const updateRecipe = catchAsync(async (req: any, res: any, next: any) => {
 	const author = await Recipe.findById(req.params.id, 'author');
 	const recipe = {
 		...req.body,
