@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-const terminate = require('./utils/terminate');
+import terminate from './utils/terminate';
 
 process.on('uncaughtException', (err) => {
 	console.log(`Unhandled exception! Shutting down...`);
