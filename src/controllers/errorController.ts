@@ -1,13 +1,13 @@
 const AppError = require('./../utils/appError');
 
-const handleDuplicateFieldsDB = (err) => {
+const handleDuplicateFieldsDB = (err: any) => {
 	const value = err.keyValue.name;
 	const message = `Duplicate field value: '${value}'. please use another value!`;
 	return new AppError(message, 400);
 };
 
-const handleValidationErrorDB = (err) => {
-	const errors = Object.values(err.errors).map((el) => el.message);
+const handleValidationErrorDB = (err: any) => {
+	const errors = Object.values(err.errors).map((el: any) => el.message);
 	const message = `Invalid input data. ${errors.join('. ')}`;
 	return new AppError(message, 400);
 };
@@ -18,7 +18,7 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
 	new AppError('Your token has expired. Please log in again', 401);
 
-const sendErrorDev = (err, res) => {
+const sendErrorDev = (err: any, res: any) => {
 	res.status(err.statusCode).json({
 		status: err.status,
 		error: err,
@@ -27,7 +27,7 @@ const sendErrorDev = (err, res) => {
 	});
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err: any, res: any) => {
 	// Operational, trusted error: send message to client
 	if (err.isOperational) {
 		res.status(err.statusCode).json({
@@ -45,7 +45,7 @@ const sendErrorProd = (err, res) => {
 	}
 };
 
-module.exports = (err, req, res, next) => {
+export = (err: any, req: any, res: any, next: any) => {
 	err.statusCode = err.statusCode || 500;
 	err.status = err.status || 'error';
 	err.message = err.message;

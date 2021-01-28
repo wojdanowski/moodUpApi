@@ -8,8 +8,8 @@ import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
 
 import { usePassportStrategies } from './passport/passport';
-const { BEARER } = require('./passport/strategies');
-const globalErrorHandler = require('./controllers/errorController');
+import { BEARER } from './passport/strategies';
+import globalErrorHandler from './controllers/errorController';
 const AppError = require('./utils/appError');
 const recipeRouter = require('./routes/recipeRoutes');
 const userRouter = require('./routes/userRoutes');
