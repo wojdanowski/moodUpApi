@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 const terminate = require('./utils/terminate');
 
 process.on('uncaughtException', (err) => {
@@ -9,11 +9,12 @@ process.on('uncaughtException', (err) => {
 });
 
 dotenv.config({ path: './config.env' });
-const app = require('./app');
+import app from './app';
 
-const DB = process.env.DATABASE.replace(
+// "!" at the end = non-null assertion operator
+const DB = process.env.DATABASE!.replace(
 	'<PASSWORD>',
-	process.env.DATABASE_PASSWORD
+	process.env.DATABASE_PASSWORD!
 );
 
 mongoose
@@ -40,6 +41,4 @@ process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'));
 process.on('SIGTERM', exitHandler(0, 'SIGTERM'));
 process.on('SIGINT', exitHandler(0, 'SIGINT'));
 
-module.exports = {
-	app,
-};
+export default app;
