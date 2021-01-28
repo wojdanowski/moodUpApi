@@ -1,11 +1,11 @@
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+import AppError from './../utils/appError';
 const upload = require('./../services/fileUpload');
 
 const singleUpload = upload.single('image');
 
-exports.uploadImage = catchAsync(async (req, res, next) => {
-	singleUpload(req, res, function (err) {
+const uploadImage = catchAsync(async (req: any, res: any, next: any) => {
+	singleUpload(req, res, function (err: any) {
 		if (err) return next(new AppError('File Upload Error', 400));
 		if (!req.file) return next(new AppError('No file provided', 400));
 		res.status(201).json({
@@ -14,3 +14,5 @@ exports.uploadImage = catchAsync(async (req, res, next) => {
 		});
 	});
 });
+
+export { uploadImage };
