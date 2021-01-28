@@ -12,14 +12,14 @@ chai.should();
 const originalIsAuthenticated = authController.isAuthenticated;
 const stubbedIsAuthenticated = sinon.stub(authController, 'isAuthenticated');
 
-const { app } = require('./../server');
+import app from './../server';
 
 stubbedIsAuthenticated.restore();
 
 before(async function () {
 	await mongoose.disconnect();
 	await mockDb.connect();
-	dummyData = await populateDB();
+	await populateDB();
 });
 
 after(async () => {
@@ -27,10 +27,4 @@ after(async () => {
 	await mockDb.mongoFakeServer.stop();
 });
 
-module.exports = {
-	chai,
-	chaiHttp,
-	originalIsAuthenticated,
-	stubbedIsAuthenticated,
-	app,
-};
+export { chai, chaiHttp, originalIsAuthenticated, stubbedIsAuthenticated, app };
