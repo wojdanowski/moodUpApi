@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const recipeSchema = new mongoose.Schema(
 	{
@@ -57,7 +57,7 @@ const recipeSchema = new mongoose.Schema(
 			},
 		],
 		author: {
-			type: mongoose.Schema.ObjectId,
+			type: mongoose.Types.ObjectId,
 			ref: 'User',
 			required: [true, 'A recipe must have an author'],
 		},
@@ -78,4 +78,4 @@ recipeSchema.index({
 
 const Recipe = mongoose.model('Recipe', recipeSchema);
 
-module.exports = Recipe;
+export default Recipe;
