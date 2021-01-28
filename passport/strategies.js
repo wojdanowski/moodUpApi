@@ -2,17 +2,27 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const User = require('./../models/userModel');
+const { getFromCache, setToCache } = require('./../redis');
 
 const authorizeToken = async (req, accessToken, callback) => {
 	try {
-		// 2) Verification of token
+		// Verify if token is in cache
+		let currentUser;
+		const cachedUser = await getFromCache(accessToken);
+		if (cachedUser) {
+			return callback(null, JSON.parse(cachedUser), {
+				scope: '*',
+			});
+		}
+
+		// Verification of token
 		const decoded = await promisify(jwt.verify)(
 			accessToken,
 			process.env.JWT_SECRET
 		);
 
-		// // 3) Check if user still exists
-		const currentUser = await User.findById(decoded.id);
+		// Check if user still exists
+		currentUser = await User.findById(decoded.id);
 		if (!currentUser) {
 			return next(
 				new AppError(
@@ -22,6 +32,13 @@ const authorizeToken = async (req, accessToken, callback) => {
 			);
 		}
 
+		// Cache user in redis and send response to client
+		await setToCache(
+			accessToken,
+			JSON.stringify(currentUser),
+			'EX',
+			process.env.REDIS_EXPIRES_IN
+		);
 		return callback(null, currentUser, {
 			scope: '*',
 		});

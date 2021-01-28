@@ -6,6 +6,7 @@ const Recipe = require('./../models/recipeModel');
 const AppError = require('./../utils/appError');
 const { StatusCodes } = require('http-status-codes');
 const { BEARER } = require('./../passport/strategies');
+const { setToCache, delFromCache } = require('./../redis');
 
 const signToken = (id) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -21,12 +22,16 @@ const createSendToken = (user, statusCode, res) => {
 		),
 		httpOnly: true,
 	};
-	if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+	if (process.env.NODE_ENV === 'production') {
+		cookieOptions.secure = true;
+	}
 
 	res.cookie('jwt', token, cookieOptions);
 
 	// Remove the password from the output
 	user.password = undefined;
+
+	setToCache(token, JSON.stringify(user), 'EX', process.env.REDIS_EXPIRES_IN);
 
 	res.status(statusCode).json({
 		status: 'success',
@@ -72,6 +77,32 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	//  3) If everything is OK, send token to client
 	createSendToken(user, StatusCodes.OK, res);
+});
+
+exports.logout = catchAsync(async (req, res, next) => {
+	let token;
+	if (req.headers.authorization) {
+		const authHeader = req.headers.authorization.split(' ');
+		if (authHeader[0] === 'Bearer') {
+			token = authHeader[1];
+		}
+	} else if (req.body.token) {
+		token = req.body.token;
+	} else if (req.cookies.jwt) {
+		token = req.cookies.jwt;
+	}
+
+	if (!token) {
+		return next(
+			new AppError('No valid token provided', StatusCodes.BAD_REQUEST)
+		);
+	}
+
+	await delFromCache(token);
+
+	res.status(StatusCodes.OK).json({
+		status: 'success',
+	});
 });
 
 exports.isAuthenticated = passport.authenticate(BEARER.name, {
