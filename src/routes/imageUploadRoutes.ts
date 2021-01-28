@@ -12,4 +12,4 @@ router
 		uploadController.uploadImage
 	);
 
-module.exports = router;
+export default router;

@@ -13,7 +13,7 @@ import globalErrorHandler from './controllers/errorController';
 import AppError from './utils/appError';
 import recipeRouter from './routes/recipeRoutes';
 import userRouter from './routes/userRoutes';
-const imageUploadRouter = require('./routes/imageUploadRoutes');
+import imageUploadRouter from './routes/imageUploadRoutes';
 
 const app = express();
 
