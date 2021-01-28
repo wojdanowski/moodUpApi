@@ -57,7 +57,7 @@ const recipeSchema = new mongoose.Schema(
 			},
 		],
 		author: {
-			type: mongoose.Types.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 			required: [true, 'A recipe must have an author'],
 		},
