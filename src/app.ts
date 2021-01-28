@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -38,7 +38,7 @@ app.use(passport.initialize());
 usePassportStrategies([BEARER]);
 
 // ROUTES ---------------------------------------------------
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
 	res.send('Hello from server');
 });
 app.use('/api/v1/recipes', recipeRouter);
@@ -46,7 +46,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/images', imageUploadRouter);
 
 //  Handle wrong/undefined routs
-app.all('*', (req, res, next) => {
+app.all('*', (req: Request, res: Response, next: NextFunction) => {
 	next(
 		new AppError(
 			`Can't find ${req.originalUrl} on this server!`,
