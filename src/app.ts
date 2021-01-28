@@ -12,7 +12,7 @@ import { BEARER } from './passport/strategies';
 import globalErrorHandler from './controllers/errorController';
 import AppError from './utils/appError';
 import recipeRouter from './routes/recipeRoutes';
-const userRouter = require('./routes/userRoutes');
+import userRouter from './routes/userRoutes';
 const imageUploadRouter = require('./routes/imageUploadRoutes');
 
 const app = express();
