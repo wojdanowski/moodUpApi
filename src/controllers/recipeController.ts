@@ -1,6 +1,6 @@
 const Recipe = require('./../models/recipeModel');
 import { deleteOne } from './../controllers/handlerFactory';
-const catchAsync = require('./../utils/catchAsync');
+import catchAsync from './../utils/catchAsync';
 const ApiFeatures = require('./../utils/apiFeatures');
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';

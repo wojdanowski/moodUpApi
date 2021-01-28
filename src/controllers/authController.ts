@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const catchAsync = require('./../utils/catchAsync');
+import catchAsync from './../utils/catchAsync';
 const passport = require('passport');
 const User = require('./../models/userModel');
 const Recipe = require('./../models/recipeModel');
