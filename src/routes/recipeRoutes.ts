@@ -37,4 +37,4 @@ router
 		recipeController.deleteRecipe
 	);
 
-module.exports = router;
+export default router;

@@ -11,7 +11,7 @@ import { usePassportStrategies } from './passport/passport';
 import { BEARER } from './passport/strategies';
 import globalErrorHandler from './controllers/errorController';
 import AppError from './utils/appError';
-const recipeRouter = require('./routes/recipeRoutes');
+import recipeRouter from './routes/recipeRoutes';
 const userRouter = require('./routes/userRoutes');
 const imageUploadRouter = require('./routes/imageUploadRoutes');
 
