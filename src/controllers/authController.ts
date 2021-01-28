@@ -3,25 +3,26 @@ const catchAsync = require('./../utils/catchAsync');
 const passport = require('passport');
 const User = require('./../models/userModel');
 const Recipe = require('./../models/recipeModel');
-const AppError = require('./../utils/appError');
+import AppError from './../utils/appError';
 const { StatusCodes } = require('http-status-codes');
 const { BEARER } = require('./../passport/strategies');
 
-const signToken = (id) => {
+const signToken = (id: any) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
 };
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user: any, statusCode: any, res: any) => {
 	const token = signToken(user._id);
 	const cookieOptions = {
 		expires: new Date(
-			Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+			<any>Date.now() +
+				<any>process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
 		),
 		httpOnly: true,
+		secure: true,
 	};
-	if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
 	res.cookie('jwt', token, cookieOptions);
 
@@ -37,7 +38,7 @@ const createSendToken = (user, statusCode, res) => {
 	});
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
+const signup = catchAsync(async (req: any, res: any, next: any) => {
 	const newUser = await User.create({
 		name: req.body.name,
 		email: req.body.email,
@@ -50,7 +51,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 	createSendToken(newUser, StatusCodes.CREATED, res);
 });
 
-exports.login = catchAsync(async (req, res, next) => {
+const login = catchAsync(async (req: any, res: any, next: any) => {
 	const { email, password } = req.body;
 
 	//  1) Check if email and password exist
@@ -74,12 +75,12 @@ exports.login = catchAsync(async (req, res, next) => {
 	createSendToken(user, StatusCodes.OK, res);
 });
 
-exports.isAuthenticated = passport.authenticate(BEARER.name, {
+const isAuthenticated = passport.authenticate(BEARER.name, {
 	session: false,
 });
 
-exports.restrictTo = (...roles) => {
-	return (req, res, next) => {
+const restrictTo = (...roles: any) => {
+	return (req: any, res: any, next: any) => {
 		if (!roles.includes(req.user.role)) {
 			return next(
 				new AppError(
@@ -92,7 +93,7 @@ exports.restrictTo = (...roles) => {
 	};
 };
 
-exports.restrictToOwner = catchAsync(async (req, res, next) => {
+const restrictToOwner = catchAsync(async (req: any, res: any, next: any) => {
 	if (!req.validData.id) {
 		return next(new AppError('No Id provided', StatusCodes.BAD_REQUEST));
 	}
@@ -119,3 +120,5 @@ exports.restrictToOwner = catchAsync(async (req, res, next) => {
 	}
 	next();
 });
+
+export { signup, login, isAuthenticated, restrictTo, restrictToOwner };
