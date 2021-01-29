@@ -12,6 +12,7 @@ const validDataToRequest = (req, res, next) => {
 	}
 
 	req.validData = matchedData(req);
+	console.log(req.validData);
 	next();
 };
 

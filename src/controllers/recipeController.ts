@@ -1,4 +1,4 @@
-import Recipe from './../models/recipeModel';
+const Recipe = require('./../models/recipeModel');
 import { deleteOne } from './../controllers/handlerFactory';
 import catchAsync from './../utils/catchAsync';
 const ApiFeatures = require('./../utils/apiFeatures');
