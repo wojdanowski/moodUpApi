@@ -8,6 +8,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { daysToMs } from './../utils/tools';
+const { setToCache, delFromCache } = require('./../redis');
 
 interface IUser {
 	name: string;
@@ -54,6 +55,8 @@ const createSendToken = (
 
 	// Remove the password from the output
 	user.password = undefined;
+
+	setToCache(token, JSON.stringify(user), 'EX', process.env.REDIS_EXPIRES_IN);
 
 	res.status(statusCode).json({
 		status: 'success',
@@ -105,6 +108,34 @@ const login = catchAsync(
 
 		//  3) If everything is OK, send token to client
 		createSendToken(user, StatusCodes.OK, res);
+	}
+);
+
+exports.logout = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		let token;
+		if (req.headers.authorization) {
+			const authHeader = req.headers.authorization.split(' ');
+			if (authHeader[0] === 'Bearer') {
+				token = authHeader[1];
+			}
+		} else if (req.body.token) {
+			token = req.body.token;
+		} else if (req.cookies.jwt) {
+			token = req.cookies.jwt;
+		}
+
+		if (!token) {
+			return next(
+				new AppError('No valid token provided', StatusCodes.BAD_REQUEST)
+			);
+		}
+
+		await delFromCache(token);
+
+		res.status(StatusCodes.OK).json({
+			status: 'success',
+		});
 	}
 );
 
