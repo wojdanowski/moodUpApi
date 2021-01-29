@@ -21,6 +21,7 @@ export interface ReqProcessed extends Request {
 	user: {
 		role: string;
 		id: string;
+		_id: string;
 	};
 	validData: {
 		id?: string;
