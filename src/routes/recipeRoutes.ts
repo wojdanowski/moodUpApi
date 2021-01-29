@@ -28,11 +28,15 @@ router
 	)
 	.patch(
 		authController.restrictTo('admin', 'user'),
+		validateId,
+		validDataToRequest,
 		authController.restrictToOwner,
 		recipeController.updateRecipe
 	)
 	.delete(
 		authController.restrictTo('admin', 'user'),
+		validateId,
+		validDataToRequest,
 		authController.restrictToOwner,
 		recipeController.deleteRecipe
 	);

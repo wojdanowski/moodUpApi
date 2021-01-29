@@ -1,9 +1,11 @@
+import mongoose from 'mongoose';
 import catchAsync from './../utils/catchAsync';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
+import { NextFunction, Request, Response } from 'express';
 
-const deleteOne = (Model: any) =>
-	catchAsync(async (req: any, res: any, next: any) => {
+const deleteOne = (Model: mongoose.Model<any>) =>
+	catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 		const doc = await Model.findByIdAndDelete(req.params.id);
 
 		if (!doc) {
