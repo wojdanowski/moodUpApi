@@ -1,4 +1,5 @@
-const AppError = require('./../utils/appError');
+import { Response, Request, NextFunction } from 'express';
+import AppError from './../utils/appError';
 
 const handleDuplicateFieldsDB = (err: any) => {
 	const value = err.keyValue.name;
@@ -18,7 +19,7 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
 	new AppError('Your token has expired. Please log in again', 401);
 
-const sendErrorDev = (err: any, res: any) => {
+const sendErrorDev = (err: any, res: Response) => {
 	res.status(err.statusCode).json({
 		status: err.status,
 		error: err,
@@ -27,7 +28,7 @@ const sendErrorDev = (err: any, res: any) => {
 	});
 };
 
-const sendErrorProd = (err: any, res: any) => {
+const sendErrorProd = (err: any, res: Response) => {
 	// Operational, trusted error: send message to client
 	if (err.isOperational) {
 		res.status(err.statusCode).json({
@@ -45,7 +46,7 @@ const sendErrorProd = (err: any, res: any) => {
 	}
 };
 
-export = (err: any, req: any, res: any, next: any) => {
+export = (err: any, req: Request, res: Response, next: NextFunction) => {
 	err.statusCode = err.statusCode || 500;
 	err.status = err.status || 'error';
 	err.message = err.message;
