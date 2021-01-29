@@ -3,6 +3,7 @@ import {
 	VerifyFunctionWithRequest,
 } from 'passport-http-bearer';
 import jwt from 'jsonwebtoken';
+import { Strategy } from 'passport';
 
 const User = require('./../models/userModel');
 
@@ -25,12 +26,11 @@ const authorizeToken = async (
 			});
 		};
 
-		// const verifyToken = promisify<string, string>(jwt.verify);
 		const decoded: decodedToken = await verifyToken(
 			accessToken,
 			process.env.JWT_SECRET!
 		);
-		console.log(decoded);
+
 		const currentUser = await User.findById(decoded.id);
 		if (currentUser) {
 			callback(null, currentUser, {
@@ -42,14 +42,11 @@ const authorizeToken = async (
 	}
 };
 
-const BEARER = {
-	name: 'bearer',
-	strategy: new BearerStrategy(
-		{
-			passReqToCallback: true,
-		},
-		authorizeToken
-	),
-};
+const Bearer: Strategy = new BearerStrategy(
+	{
+		passReqToCallback: true,
+	},
+	authorizeToken
+);
 
-export { BEARER, authorizeToken };
+export { authorizeToken, Bearer };

@@ -1,8 +1,8 @@
-const passport = require('passport');
+import passport, { Strategy } from 'passport';
 
-const usePassportStrategies = (strategies: any) => {
-	strategies.forEach((strategy: any) => {
-		passport.use(strategy.name, strategy.strategy);
+const usePassportStrategies = (strategies: Array<Strategy>) => {
+	strategies.forEach((strategy: Strategy) => {
+		passport.use(strategy);
 	});
 };
 
