@@ -2,7 +2,7 @@ const express = require('express');
 const recipeController = require('./../controllers/recipeController');
 const authController = require('./../controllers/authController');
 const router = express.Router();
-const validators = require('./../validators/validation');
+import { validateId, validDataToRequest } from './../validators/validation';
 
 router.use(authController.isAuthenticated);
 
@@ -21,8 +21,8 @@ router
 	.route('/:id')
 	.get(
 		authController.restrictTo('admin', 'user'),
-		validators.validateId,
-		validators.validDataToRequest,
+		validateId,
+		validDataToRequest,
 		authController.restrictToOwner,
 		recipeController.getRecipe
 	)

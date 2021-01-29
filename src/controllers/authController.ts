@@ -17,13 +17,13 @@ interface IUser {
 	_id: string;
 }
 
-interface ReqProcessed extends Request {
+export interface ReqProcessed extends Request {
 	user: {
 		role: string;
 		id: string;
 	};
 	validData: {
-		id: string;
+		id?: string;
 	};
 }
 
