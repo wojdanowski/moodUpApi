@@ -1,25 +1,44 @@
-const BearerStrategy = require('passport-http-bearer').Strategy;
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
+import {
+	Strategy as BearerStrategy,
+	VerifyFunctionWithRequest,
+} from 'passport-http-bearer';
+import jwt from 'jsonwebtoken';
+
 const User = require('./../models/userModel');
 
-const authorizeToken = async (req: any, accessToken: any, callback: any) => {
-	try {
-		// 2) Verification of token
-		const decoded = await promisify(jwt.verify)(
-			accessToken,
-			process.env.JWT_SECRET
-		);
+type decodedToken = {
+	id: string;
+	iat: number;
+	exp: number;
+};
 
-		// // 3) Check if user still exists
+const authorizeToken = async (
+	...[req, accessToken, callback]: Parameters<VerifyFunctionWithRequest>
+) => {
+	try {
+		const verifyToken = (token: string, secret: string): Promise<any> => {
+			return new Promise((resolve, reject) => {
+				jwt.verify(token, secret, (err, decoded) => {
+					if (err) return reject(err);
+					else return resolve(decoded);
+				});
+			});
+		};
+
+		// const verifyToken = promisify<string, string>(jwt.verify);
+		const decoded: decodedToken = await verifyToken(
+			accessToken,
+			process.env.JWT_SECRET!
+		);
+		console.log(decoded);
 		const currentUser = await User.findById(decoded.id);
 		if (currentUser) {
-			return callback(null, currentUser, {
+			callback(null, currentUser, {
 				scope: '*',
 			});
 		}
 	} catch (e) {
-		return callback(null, false);
+		callback(null, false, { scope: '*' });
 	}
 };
 
@@ -29,8 +48,7 @@ const BEARER = {
 		{
 			passReqToCallback: true,
 		},
-		(req: any, accessToken: any, callback: any) =>
-			authorizeToken(req, accessToken, callback)
+		authorizeToken
 	),
 };
 

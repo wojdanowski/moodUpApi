@@ -6,10 +6,4 @@ const usePassportStrategies = (strategies: any) => {
 	});
 };
 
-const another = (strategies: any) => {
-	strategies.forEach((strategy: any) => {
-		passport.use(strategy.name, strategy.strategy);
-	});
-};
-
-export { usePassportStrategies, another };
+export { usePassportStrategies };
