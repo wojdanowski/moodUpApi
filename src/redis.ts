@@ -1,5 +1,4 @@
-import redis, { RedisClient, Callback } from 'redis';
-import { promisify } from 'util';
+import redis, { RedisClient } from 'redis';
 
 const redis_url: string = process.env.REDIS_URL!;
 const redis_port: number = parseInt(process.env.REDIS_PORT!);
