@@ -1,23 +1,30 @@
 import { Response, Request, NextFunction } from 'express';
 import AppError from './../utils/appError';
+import { StatusCodes } from 'http-status-codes';
 
 const handleDuplicateFieldsDB = (err: any) => {
 	const value = err.keyValue.name;
 	const message = `Duplicate field value: '${value}'. please use another value!`;
-	return new AppError(message, 400);
+	return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
 const handleValidationErrorDB = (err: any) => {
 	const errors = Object.values(err.errors).map((el: any) => el.message);
 	const message = `Invalid input data. ${errors.join('. ')}`;
-	return new AppError(message, 400);
+	return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
 const handleJWTError = () =>
-	new AppError('Invalid token. Please log in again!', 401);
+	new AppError(
+		'Invalid token. Please log in again!',
+		StatusCodes.UNAUTHORIZED
+	);
 
 const handleJWTExpiredError = () =>
-	new AppError('Your token has expired. Please log in again', 401);
+	new AppError(
+		'Your token has expired. Please log in again',
+		StatusCodes.UNAUTHORIZED
+	);
 
 const sendErrorDev = (err: any, res: Response) => {
 	res.status(err.statusCode).json({
@@ -47,7 +54,7 @@ const sendErrorProd = (err: any, res: Response) => {
 };
 
 export = (err: any, req: Request, res: Response, next: NextFunction) => {
-	err.statusCode = err.statusCode || 500;
+	err.statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
 	err.status = err.status || 'error';
 	err.message = err.message;
 
