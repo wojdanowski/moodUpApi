@@ -8,7 +8,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { daysToMs } from './../utils/tools';
-const { setToCache, delFromCache } = require('./../redis');
+import { setToCache, delFromCache } from './../redis';
 
 interface IUser {
 	name: string;
@@ -56,7 +56,12 @@ const createSendToken = (
 	// Remove the password from the output
 	user.password = undefined;
 
-	setToCache(token, JSON.stringify(user), 'EX', process.env.REDIS_EXPIRES_IN);
+	setToCache(
+		token,
+		JSON.stringify(user),
+		'EX',
+		parseInt(process.env.REDIS_EXPIRES_IN!)
+	);
 
 	res.status(statusCode).json({
 		status: 'success',
@@ -174,8 +179,9 @@ const restrictToOwner = catchAsync(
 				)
 			);
 		}
+
 		const authorId: string = docAuthor.author.toString();
-		const userId: string = req.user.id.toString();
+		const userId: string = req.user._id.toString();
 
 		if (authorId !== userId && req.user.role !== 'admin') {
 			return next(

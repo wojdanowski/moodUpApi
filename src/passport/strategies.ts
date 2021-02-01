@@ -4,6 +4,7 @@ import {
 } from 'passport-http-bearer';
 import jwt from 'jsonwebtoken';
 import { Strategy } from 'passport';
+import { getFromCache, setToCache } from './../redis';
 
 const User = require('./../models/userModel');
 
@@ -17,6 +18,14 @@ const authorizeToken = async (
 	...[req, accessToken, callback]: Parameters<VerifyFunctionWithRequest>
 ) => {
 	try {
+		let currentUser;
+		const cachedUser = await getFromCache(accessToken);
+		if (cachedUser) {
+			return callback(null, JSON.parse(cachedUser), {
+				scope: '*',
+			});
+		}
+
 		const verifyToken = (token: string, secret: string): Promise<any> => {
 			return new Promise((resolve, reject) => {
 				jwt.verify(token, secret, (err, decoded) => {
@@ -31,12 +40,21 @@ const authorizeToken = async (
 			process.env.JWT_SECRET!
 		);
 
-		const currentUser = await User.findById(decoded.id);
-		if (currentUser) {
-			callback(null, currentUser, {
-				scope: '*',
-			});
+		currentUser = await User.findById(decoded.id);
+		if (!currentUser) {
+			return callback(null, false, { scope: '*' });
 		}
+
+		await setToCache(
+			accessToken,
+			JSON.stringify(currentUser),
+			'EX',
+			parseInt(process.env.REDIS_EXPIRES_IN!)
+		);
+
+		callback(null, currentUser, {
+			scope: '*',
+		});
 	} catch (e) {
 		callback(null, false, { scope: '*' });
 	}
