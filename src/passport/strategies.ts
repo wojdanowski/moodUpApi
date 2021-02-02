@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import { Strategy } from 'passport';
 import { getFromCache, setToCache } from './../redis';
 
-const User = require('./../models/userModel');
+import User from './../models/userModel';
 
 type decodedToken = {
 	id: string;
@@ -20,6 +20,7 @@ const authorizeToken = async (
 	try {
 		let currentUser;
 		const cachedUser = await getFromCache(accessToken);
+
 		if (cachedUser) {
 			return callback(null, JSON.parse(cachedUser), {
 				scope: '*',

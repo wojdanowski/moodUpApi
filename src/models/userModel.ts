@@ -2,10 +2,25 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
-export interface IUser extends mongoose.Document {
+export interface IUserTemplate {
+	name: string;
+	email: string;
 	password: string;
-	passwordConfirm?: string;
+	passwordConfirm: string | undefined;
+	role: string;
+	_id?: any;
 }
+
+export interface IUser extends mongoose.Document, IUserTemplate {}
+
+export interface IUserModel extends mongoose.Model<IUser> {
+	correctPassword(
+		candidatePassword: string,
+		password: string
+	): Promise<boolean>;
+}
+
+export type UserPublic = Omit<IUserTemplate, 'password' | 'passwordConfirm'>;
 
 const userSchema = new mongoose.Schema({
 	name: {
@@ -17,7 +32,6 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: [true, 'Email required'],
 		unique: [true, 'Email is already in use'],
-		// lowercase: true,
 		validate: [validator.isEmail, 'Email not correct'],
 	},
 	password: {
@@ -43,22 +57,9 @@ const userSchema = new mongoose.Schema({
 		enum: ['user', 'admin'],
 		default: 'user',
 	},
-	passwordChangedAt: Date,
-	passwordResetToken: String,
-	passwordResetExpires: Date,
-	// active: {
-	// 	type: Boolean,
-	// 	default: true,
-	// 	select: false,
-	// },
 });
 
-// userSchema.obj.passwordConfirm.validate.validator = function (el: any) {
-// 	// if password match passwordConfirm then true => no error
-// 	return el === this.password;
-// };
-
-userSchema.pre('save', async function (this: IUser, next) {
+userSchema.pre<IUser>('save', async function (this: IUser, next) {
 	// Hash the password with cost of 12
 	this.password = await bcrypt.hash(this.password, 12);
 	//  Delete the password confirm
@@ -66,20 +67,15 @@ userSchema.pre('save', async function (this: IUser, next) {
 	next();
 });
 
-// Show only active users.
-// userSchema.pre(/^find/, function (this: IUser,next) {
-// 	this.constructor.find({ active: { $ne: false } });
-// 	next();
-// });
-
 // check if the password is correct
-userSchema.methods.correctPassword = async function (
-	candidatePassword: any,
-	userPassword: any
+userSchema.statics.correctPassword = async function (
+	this: mongoose.Model<IUser>,
+	candidatePassword: string,
+	password: string
 ) {
-	return await bcrypt.compare(candidatePassword, userPassword);
+	return await bcrypt.compare(candidatePassword, password);
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model<IUser, IUserModel>('User', userSchema);
 
 export default User;

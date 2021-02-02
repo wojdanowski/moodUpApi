@@ -1,4 +1,4 @@
-const Recipe = require('./../models/recipeModel');
+import Recipe, { IRecipeTemplate, IRecipe } from './../models/recipeModel';
 import { deleteOne } from './../controllers/handlerFactory';
 import catchAsync from './../utils/catchAsync';
 const ApiFeatures = require('./../utils/apiFeatures');
@@ -83,7 +83,7 @@ const updateRecipe = catchAsync(
 		const author = await Recipe.findById(req.params.id, 'author');
 		const recipe = {
 			...req.body,
-			author: author._id,
+			author: author!._id,
 		};
 		const doc = await Recipe.findByIdAndUpdate(req.params.id, recipe, {
 			new: true,

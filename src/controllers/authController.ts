@@ -1,22 +1,14 @@
 import jwt from 'jsonwebtoken';
 import catchAsync from './../utils/catchAsync';
 import passport from 'passport';
-const User = require('./../models/userModel');
-const Recipe = require('./../models/recipeModel');
+import User, { IUser, IUserTemplate, UserPublic } from './../models/userModel';
+import Recipe from './../models/recipeModel';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response } from 'express';
-import { daysToMs } from './../utils/tools';
+import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
-
-interface IUser {
-	name: string;
-	email: string;
-	password: string | undefined;
-	passwordConfirm: string;
-	_id: string;
-}
 
 export interface ReqProcessed extends Request {
 	user: {
@@ -36,7 +28,7 @@ const signToken = (id: string) => {
 };
 
 const createSendToken = (
-	user: IUser,
+	user: IUserTemplate,
 	statusCode: StatusCodes,
 	res: Response
 ) => {
@@ -53,12 +45,14 @@ const createSendToken = (
 
 	res.cookie('jwt', token, cookieOptions);
 
-	// Remove the password from the output
-	user.password = undefined;
+	const userWithoutPass: UserPublic = delKey<IUserTemplate, UserPublic>(
+		user,
+		'password'
+	);
 
 	setToCache(
 		token,
-		JSON.stringify(user),
+		JSON.stringify(userWithoutPass),
 		'EX',
 		parseInt(process.env.REDIS_EXPIRES_IN!)
 	);
@@ -67,22 +61,25 @@ const createSendToken = (
 		status: 'success',
 		token,
 		data: {
-			user: user,
+			user: userWithoutPass,
 		},
 	});
 };
 
 const signup = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const newUser = await User.create({
+		const userDetails: IUserTemplate = {
 			name: req.body.name,
 			email: req.body.email,
 			password: req.body.password,
 			passwordConfirm: req.body.passwordConfirm,
-			passwordChangedAt: req.body.passwordChangedAt,
 			role: 'user',
-		});
+		};
 
+		const newUserDoc = await User.create({
+			...userDetails,
+		});
+		const newUser: IUserTemplate = newUserDoc.toObject();
 		createSendToken(newUser, StatusCodes.CREATED, res);
 	}
 );
@@ -101,8 +98,26 @@ const login = catchAsync(
 			);
 		}
 		//  2) Check if the user exist && if the password is correct
-		const user = await User.findOne({ email }).select('+password');
-		if (!user || !(await user.correctPassword(password, user.password))) {
+		const user: IUserTemplate = await User.findOne(
+			{ email },
+			{},
+			{ lean: true }
+		).select('+password');
+
+		if (!user) {
+			return next(
+				new AppError(
+					'Incorrect email or password',
+					StatusCodes.BAD_REQUEST
+				)
+			);
+		}
+		const passwordCorrect: boolean = await User.correctPassword(
+			password,
+			user.password
+		);
+
+		if (!passwordCorrect) {
 			return next(
 				new AppError(
 					'Incorrect email or password',
@@ -116,7 +131,7 @@ const login = catchAsync(
 	}
 );
 
-exports.logout = catchAsync(
+const logout = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		let token;
 		if (req.headers.authorization) {
@@ -195,4 +210,4 @@ const restrictToOwner = catchAsync(
 	}
 );
 
-export { signup, login, isAuthenticated, restrictTo, restrictToOwner };
+export { signup, login, isAuthenticated, restrictTo, restrictToOwner, logout };

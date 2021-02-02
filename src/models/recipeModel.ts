@@ -1,4 +1,18 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { IUser } from './userModel';
+
+export interface IRecipeTemplate {
+	name: string;
+	shortDescription: string;
+	prepTime: string;
+	prepSteps: Array<string>;
+	ingredients: Array<string>;
+	author: IUser['_id'];
+	image: string;
+	_id?: any;
+}
+
+export interface IRecipe extends mongoose.Document, IRecipeTemplate {}
 
 const recipeSchema = new mongoose.Schema(
 	{
@@ -76,6 +90,6 @@ recipeSchema.index({
 	name: 'text',
 });
 
-const Recipe = mongoose.model('Recipe', recipeSchema);
+const Recipe = mongoose.model<IRecipe>('Recipe', recipeSchema);
 
-module.exports = Recipe;
+export default Recipe;
