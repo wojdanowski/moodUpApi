@@ -1,7 +1,7 @@
 import Recipe, { IRecipeTemplate, IRecipe } from './../models/recipeModel';
 import { deleteOne } from './../controllers/handlerFactory';
 import catchAsync from './../utils/catchAsync';
-const ApiFeatures = require('./../utils/apiFeatures');
+import ApiFeatures from './../utils/apiFeatures';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
@@ -46,7 +46,7 @@ const getAllRecipes = catchAsync(
 			.search()
 			.paginate();
 
-		const doc: Array<IRecipe | null> = await features.query;
+		const doc = await features.query;
 
 		if (!doc) {
 			return next(
