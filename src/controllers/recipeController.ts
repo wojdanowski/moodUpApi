@@ -5,13 +5,15 @@ const ApiFeatures = require('./../utils/apiFeatures');
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
-import { ReqProcessed } from './../controllers/authController';
+import { ReqValidated } from '../validators/validation';
+import { ReqLoggedIn } from './authController';
 
 const deleteRecipe = deleteOne(Recipe);
 
 const getRecipe = catchAsync(
-	async (req: ReqProcessed, res: Response, next: NextFunction) => {
-		const doc = req.validData && (await Recipe.findById(req.validData.id));
+	async (req: ReqValidated, res: Response, next: NextFunction) => {
+		const doc: IRecipe | null =
+			req.validData && (await Recipe.findById(req.validData.id));
 
 		if (!doc) {
 			return next(
@@ -32,9 +34,10 @@ const getRecipe = catchAsync(
 );
 
 const getAllRecipes = catchAsync(
-	async (req: ReqProcessed, res: Response, next: NextFunction) => {
-		const user = req.user._id;
-		const searchQuery = req.user.role === 'user' ? { author: user } : {};
+	async (req: ReqLoggedIn, res: Response, next: NextFunction) => {
+		const user: string = req.user._id;
+		const searchQuery: object =
+			req.user.role === 'user' ? { author: user } : {};
 
 		const features = new ApiFeatures(
 			Recipe.find(searchQuery, 'name prepTime image'),
@@ -43,7 +46,7 @@ const getAllRecipes = catchAsync(
 			.search()
 			.paginate();
 
-		const doc = await features.query;
+		const doc: Array<IRecipe | null> = await features.query;
 
 		if (!doc) {
 			return next(
@@ -62,12 +65,12 @@ const getAllRecipes = catchAsync(
 );
 
 const createRecipe = catchAsync(
-	async (req: ReqProcessed, res: Response, next: NextFunction) => {
-		const recipe = {
+	async (req: ReqLoggedIn, res: Response, next: NextFunction) => {
+		const recipe: IRecipeTemplate = {
 			...req.body,
 			author: req.user._id,
 		};
-		const doc = await Recipe.create(recipe);
+		const doc: IRecipe | null = await Recipe.create(recipe);
 
 		res.status(StatusCodes.CREATED).json({
 			status: 'success',
@@ -80,15 +83,30 @@ const createRecipe = catchAsync(
 
 const updateRecipe = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const author = await Recipe.findById(req.params.id, 'author');
-		const recipe = {
+		const author: IRecipe | null = await Recipe.findById(
+			req.params.id,
+			'author'
+		);
+		if (!author) {
+			return next(
+				new AppError(
+					'Author not find on that recipe',
+					StatusCodes.NOT_FOUND
+				)
+			);
+		}
+		const recipe: IRecipeTemplate = {
 			...req.body,
-			author: author!._id,
+			author: author._id,
 		};
-		const doc = await Recipe.findByIdAndUpdate(req.params.id, recipe, {
-			new: true,
-			runValidators: true,
-		});
+		const doc: IRecipe | null = await Recipe.findByIdAndUpdate(
+			req.params.id,
+			recipe,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
 		if (!doc) {
 			return next(
 				new AppError(

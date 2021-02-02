@@ -7,14 +7,16 @@ export interface IRecipeTemplate {
 	prepTime: string;
 	prepSteps: Array<string>;
 	ingredients: Array<string>;
-	author: IUser['_id'];
+	author: mongoose.Types.ObjectId | Record<string, unknown>;
 	image: string;
 	_id?: any;
 }
 
-export interface IRecipe extends mongoose.Document, IRecipeTemplate {}
+export interface IRecipe extends mongoose.Document, IRecipeTemplate {
+	author: IUser['_id'];
+}
 
-const recipeSchema = new mongoose.Schema(
+const recipeSchema = new mongoose.Schema<IRecipe>(
 	{
 		name: {
 			type: String,
