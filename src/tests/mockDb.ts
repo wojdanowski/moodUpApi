@@ -6,6 +6,11 @@ import jwt from 'jsonwebtoken';
 
 const mongoFakeServer = new MongoMemoryServer();
 
+export interface TestUser extends IUserTemplate {
+	_id: string;
+	token: string;
+}
+
 const connect = async (): Promise<void> => {
 	const uri: string = await mongoFakeServer.getUri();
 	const mongooseOpts = {
@@ -24,7 +29,7 @@ const dummyUser: IUserTemplate = {
 	role: 'admin',
 };
 
-const populateDB = async (): Promise<object> => {
+const populateDB = async (): Promise<void> => {
 	const userDoc = await User.create({ ...dummyUser });
 	const user: IUserTemplate = userDoc.toObject();
 
@@ -43,14 +48,9 @@ const populateDB = async (): Promise<object> => {
 		{ ...dummyRecipe },
 	]);
 	const recipe: IRecipeTemplate = recipeDoc[0].toObject();
-	return {
-		dummyRecipe: { ...recipe },
-		dummyUser: { ...user },
-		dummyToken: '',
-	};
 };
 
-const getUserData = async (): Promise<object> => {
+const getUserData = async (): Promise<TestUser> => {
 	const foundUser: IUserTemplate = (await User.find())[0].toObject();
 	const token: string = jwt.sign(
 		{ id: foundUser._id },
