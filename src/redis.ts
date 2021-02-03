@@ -1,9 +1,9 @@
 import redis, { RedisClient } from 'redis';
 
-const redis_url: string = process.env.REDIS_URL!;
-const redis_port: number = parseInt(process.env.REDIS_PORT!);
+const redisUrl: string = process.env.REDIS_URL!;
+const redisPort: number = parseInt(process.env.REDIS_PORT!);
 
-const redisClient: RedisClient = redis.createClient(redis_port, redis_url);
+const redisClient: RedisClient = redis.createClient(redisPort, redisUrl);
 redisClient.on('connect', () => {
 	console.log('Redis connected');
 });
