@@ -1,7 +1,7 @@
 import redis, { RedisClient } from 'redis';
 
 const redisUrl: string = process.env.REDIS_URL!;
-const redisPort: number = parseInt(process.env.REDIS_PORT!);
+const redisPort: number = parseInt(process.env.REDIS_PORT!, 10);
 
 const redisClient: RedisClient = redis.createClient(redisPort, redisUrl);
 redisClient.on('connect', () => {

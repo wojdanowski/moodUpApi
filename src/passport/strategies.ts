@@ -50,7 +50,7 @@ const authorizeToken = async (
 			accessToken,
 			JSON.stringify(currentUser),
 			'EX',
-			parseInt(process.env.REDIS_EXPIRES_IN!)
+			parseInt(process.env.REDIS_EXPIRES_IN!, 10)
 		);
 
 		callback(null, currentUser, {

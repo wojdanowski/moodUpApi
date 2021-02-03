@@ -24,7 +24,7 @@ const createSendToken = (
 	const token: string = signToken(user._id);
 	const expiration: Date = new Date(
 		<number>Date.now() +
-			<number>daysToMs(parseInt(process.env.COOKIE_EXP_IN!))
+			<number>daysToMs(parseInt(process.env.COOKIE_EXP_IN!, 10))
 	);
 	const cookieOptions: CookieOptions = {
 		expires: expiration,
@@ -43,7 +43,7 @@ const createSendToken = (
 		token,
 		JSON.stringify(userWithoutPass),
 		'EX',
-		parseInt(process.env.REDIS_EXPIRES_IN!)
+		parseInt(process.env.REDIS_EXPIRES_IN!, 10)
 	);
 
 	res.status(statusCode).json({
