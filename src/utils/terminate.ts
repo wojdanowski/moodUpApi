@@ -1,9 +1,21 @@
-function terminate(server: any, options = { coredump: false, timeout: 500 }) {
-	const exit = (code: any) => {
-		options.coredump ? process.abort() : process.exit(code);
+import { Server } from 'http';
+
+interface Function {
+	(err: Error, promise: Promise<any>): void;
+}
+
+function terminate(
+	server: Server,
+	options = { coredump: false, timeout: 500 }
+) {
+	const exit = (err: Error | undefined): void => {
+		options.coredump ? process.abort() : process.exit();
 	};
 
-	return (code: any, reason: any) => (err: any, promise: any) => {
+	return (code: number, reason: string): Function => (
+		err: Error,
+		promise: Promise<any>
+	): void => {
 		if (err && err instanceof Error) {
 			console.log(err.message, err.stack);
 		}

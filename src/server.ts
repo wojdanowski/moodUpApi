@@ -10,6 +10,7 @@ process.on('uncaughtException', (err) => {
 
 dotenv.config({ path: './config.env' });
 import app from './app';
+import { Server } from 'http';
 
 // "!" at the end = non-null assertion operator
 const DB = process.env.DATABASE!.replace(
@@ -27,7 +28,7 @@ mongoose
 
 const port = process.env.PORT || 3000;
 
-const server = app.listen(port, () => {
+const server: Server = app.listen(port, () => {
 	console.log(`App running on port: ${port}...`);
 });
 
