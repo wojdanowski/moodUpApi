@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import catchAsync from './../utils/catchAsync';
+import { catchAsync } from './../utils/catchAsync';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';

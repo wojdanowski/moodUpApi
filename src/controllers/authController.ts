@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import catchAsync from './../utils/catchAsync';
+import { catchAsync, ReturnedFunc } from './../utils/catchAsync';
 import passport from 'passport';
-import User, { IUserTemplate, UserPublic } from './../models/userModel';
-import Recipe from './../models/recipeModel';
+import User, { IUser, IUserTemplate, UserPublic } from './../models/userModel';
+import Recipe, { IRecipe } from './../models/recipeModel';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { Bearer } from './../passport/strategies';
@@ -10,7 +10,7 @@ import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
 
-const signToken = (id: string) => {
+const signToken = (id: string): string => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
@@ -20,7 +20,7 @@ const createSendToken = (
 	user: IUserTemplate,
 	statusCode: StatusCodes,
 	res: Response
-) => {
+): void => {
 	const token: string = signToken(user._id);
 	const expiration: Date = new Date(
 		<number>Date.now() +
@@ -56,7 +56,7 @@ const createSendToken = (
 };
 
 const signup = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const userDetails: IUserTemplate = {
 			name: req.body.name,
 			email: req.body.email,
@@ -65,7 +65,7 @@ const signup = catchAsync(
 			role: 'user',
 		};
 
-		const newUserDoc = await User.create({
+		const newUserDoc: IUser = await User.create({
 			...userDetails,
 		});
 		const newUser: IUserTemplate = newUserDoc.toObject();
@@ -75,7 +75,10 @@ const signup = catchAsync(
 
 const login = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-		const { email, password } = req.body;
+		const {
+			email,
+			password,
+		}: { email: string; password: string } = req.body;
 
 		//  1) Check if email and password exist
 		if (!email || !password) {
@@ -121,10 +124,10 @@ const login = catchAsync(
 );
 
 const logout = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
-		let token;
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		let token: string | undefined;
 		if (req.headers.authorization) {
-			const authHeader = req.headers.authorization.split(' ');
+			const authHeader: string[] = req.headers.authorization.split(' ');
 			if (authHeader[0] === 'Bearer') {
 				token = authHeader[1];
 			}
@@ -148,11 +151,11 @@ const logout = catchAsync(
 	}
 );
 
-const isAuthenticated = passport.authenticate(Bearer, {
+const isAuthenticated: any = passport.authenticate(Bearer, {
 	session: false,
 });
 
-const restrictTo = (...roles: Array<string>) => {
+const restrictTo = (...roles: Array<string>): ReturnedFunc => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.user.role)) {
 			return next(
@@ -167,14 +170,17 @@ const restrictTo = (...roles: Array<string>) => {
 };
 
 const restrictToOwner = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		if (!req.validData.id) {
 			return next(
 				new AppError('No Id provided', StatusCodes.BAD_REQUEST)
 			);
 		}
 
-		const docAuthor = await Recipe.findById(req.validData.id, 'author');
+		const docAuthor: IRecipe | null = await Recipe.findById(
+			req.validData.id,
+			'author'
+		);
 		if (!docAuthor) {
 			return next(
 				new AppError(

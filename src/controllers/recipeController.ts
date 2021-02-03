@@ -1,6 +1,6 @@
 import Recipe, { IRecipeTemplate, IRecipe } from './../models/recipeModel';
 import { deleteOne } from './../controllers/handlerFactory';
-import catchAsync from './../utils/catchAsync';
+import { catchAsync } from './../utils/catchAsync';
 import ApiFeatures from './../utils/apiFeatures';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
