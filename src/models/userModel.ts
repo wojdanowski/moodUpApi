@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { CallbackError } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
@@ -59,13 +59,16 @@ const userSchema = new mongoose.Schema({
 	},
 });
 
-userSchema.pre<IUser>('save', async function (this: IUser, next) {
-	// Hash the password with cost of 12
-	this.password = await bcrypt.hash(this.password, 12);
-	//  Delete the password confirm
-	this.passwordConfirm = undefined;
-	next();
-});
+userSchema.pre<IUser>(
+	'save',
+	async function (this: IUser, next: (err?: CallbackError) => void) {
+		// Hash the password with cost of 12
+		this.password = await bcrypt.hash(this.password, 12);
+		//  Delete the password confirm
+		this.passwordConfirm = undefined;
+		next();
+	}
+);
 
 // check if the password is correct
 userSchema.statics.correctPassword = async function (
