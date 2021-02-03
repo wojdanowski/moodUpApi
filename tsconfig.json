@@ -14,8 +14,10 @@
       "typeRoots": [
         "./@types",
         "./node_modules/@types"
-      ]
-      // "noImplicitAny": false
+      ],
+      "rootDir": "./src",
+      "removeComments": true,
+      "allowJs": true
     } ,
     "include": ["./src/**/*"],
     "exclude": ["./node_modules", "./src/tests"]
