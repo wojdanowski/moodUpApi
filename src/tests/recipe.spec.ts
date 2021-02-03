@@ -5,9 +5,9 @@ import { IRecipeTemplate } from '../models/recipeModel';
 import { Request, Response, NextFunction } from 'express';
 import { Response as SuperResponse } from 'superagent';
 
-const BASE_URL = '/api/v1/recipes';
-const RECIPE_ID_NOT_EXISTENT = '5fd790724a7ab216c8920315';
-const RECIPE_ID_WRONG = 'testId';
+const BASE_URL: string = '/api/v1/recipes';
+const RECIPE_ID_NOT_EXISTENT: string = '5fd790724a7ab216c8920315';
+const RECIPE_ID_WRONG: string = 'testId';
 
 describe('Recipes', (): void => {
 	let dummyUser: TestUser;

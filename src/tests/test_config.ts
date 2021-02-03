@@ -29,4 +29,4 @@ after(
 	}
 );
 
-export { chai, originalIsAuthenticated, stubbedIsAuthenticated, app };
+export { chai, originalIsAuthenticated, stubbedIsAuthenticated, app, sinon };
