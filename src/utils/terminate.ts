@@ -1,18 +1,23 @@
+import { RefreshClosedReports } from 'aws-sdk/clients/cur';
 import { Server } from 'http';
 
-interface Function {
+interface CloseFunction {
 	(err: Error, promise: Promise<any>): void;
+}
+
+interface CreatorFunction {
+	(reason: string): CloseFunction;
 }
 
 function terminate(
 	server: Server,
 	options = { coredump: false, timeout: 500 }
-) {
+): CreatorFunction {
 	const exit = (err: Error | undefined): void => {
 		options.coredump ? process.abort() : process.exit();
 	};
 
-	return (code: number, reason: string): Function => (
+	return (reason: string): CloseFunction => (
 		err: Error,
 		promise: Promise<any>
 	): void => {

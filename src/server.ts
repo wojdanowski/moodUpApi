@@ -37,9 +37,9 @@ const exitHandler = terminate(server, {
 	timeout: 1000,
 });
 
-process.on('uncaughtException', exitHandler(1, 'Unexpected Error'));
-process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'));
-process.on('SIGTERM', exitHandler(0, 'SIGTERM'));
-process.on('SIGINT', exitHandler(0, 'SIGINT'));
+process.on('uncaughtException', exitHandler('Unexpected Error'));
+process.on('unhandledRejection', exitHandler('Unhandled Promise'));
+process.on('SIGTERM', exitHandler('SIGTERM'));
+process.on('SIGINT', exitHandler('SIGINT'));
 
 export default app;
