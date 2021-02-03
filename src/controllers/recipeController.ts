@@ -5,13 +5,11 @@ import ApiFeatures from './../utils/apiFeatures';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
-import { ReqValidated } from '../validators/validation';
-import { ReqLoggedIn } from './authController';
 
 const deleteRecipe = deleteOne(Recipe);
 
 const getRecipe = catchAsync(
-	async (req: ReqValidated, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction) => {
 		const doc: IRecipe | null =
 			req.validData && (await Recipe.findById(req.validData.id));
 
@@ -34,7 +32,7 @@ const getRecipe = catchAsync(
 );
 
 const getAllRecipes = catchAsync(
-	async (req: ReqLoggedIn, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction) => {
 		const user: string = req.user._id;
 		const searchQuery: object =
 			req.user.role === 'user' ? { author: user } : {};
@@ -65,7 +63,7 @@ const getAllRecipes = catchAsync(
 );
 
 const createRecipe = catchAsync(
-	async (req: ReqLoggedIn, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction) => {
 		const recipe: IRecipeTemplate = {
 			...req.body,
 			author: req.user._id,
@@ -125,10 +123,4 @@ const updateRecipe = catchAsync(
 	}
 );
 
-module.exports = {
-	deleteRecipe,
-	getRecipe,
-	getAllRecipes,
-	createRecipe,
-	updateRecipe,
-};
+export { deleteRecipe, getRecipe, getAllRecipes, createRecipe, updateRecipe };

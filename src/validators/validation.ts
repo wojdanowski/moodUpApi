@@ -3,16 +3,10 @@ import { param } from 'express-validator/check';
 import { validationResult, matchedData } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
 
-export interface ReqValidated extends Request {
-	validData: {
-		id?: string;
-	};
-}
-
 const validateId = param('id', 'wrong ID').isMongoId();
 
 const validDataToRequest = (
-	req: ReqValidated,
+	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {

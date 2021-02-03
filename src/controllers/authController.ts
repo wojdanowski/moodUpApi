@@ -9,21 +9,12 @@ import { Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
-import { ReqValidated } from './../validators/validation';
 
 const signToken = (id: string) => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
 };
-
-export interface ReqLoggedIn extends Request {
-	user: UserPublic;
-}
-
-export interface ReqLoggedValid extends Request, ReqValidated {
-	user: UserPublic;
-}
 
 const createSendToken = (
 	user: IUserTemplate,
@@ -162,7 +153,7 @@ const isAuthenticated = passport.authenticate(Bearer, {
 });
 
 const restrictTo = (...roles: Array<string>) => {
-	return (req: ReqLoggedIn, res: Response, next: NextFunction) => {
+	return (req: Request, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.user.role)) {
 			return next(
 				new AppError(
@@ -176,7 +167,7 @@ const restrictTo = (...roles: Array<string>) => {
 };
 
 const restrictToOwner = catchAsync(
-	async (req: ReqLoggedValid, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction) => {
 		if (!req.validData.id) {
 			return next(
 				new AppError('No Id provided', StatusCodes.BAD_REQUEST)

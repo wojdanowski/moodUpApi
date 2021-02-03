@@ -1,5 +1,5 @@
-const express = require('express');
-const recipeController = require('./../controllers/recipeController');
+import express from 'express';
+import * as recipeController from './../controllers/recipeController';
 import * as authController from './../controllers/authController';
 const router = express.Router();
 import { validateId, validDataToRequest } from './../validators/validation';
