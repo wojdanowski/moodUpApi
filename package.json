@@ -6,11 +6,8 @@
   "scripts": {
     "start": "ts-node ./src/server.ts",
     "start:debug": "node --nolazy --inspect=38009 -r ts-node/register ./src/server",
-    "start:dev": "SET NODE_ENV=development&& nodemon ./src/server.ts",
-    "start:prod": "SET NODE_ENV=production&& nodemon ./src/server.ts",
-    "debug": "ndb server.ts",
-    "test": "ts-mocha ./src/tests/*.spec.ts --exit --timeout 60000",
-    "nodemon:watch": "nodemon --config './nodemon.json'"
+    "start:test": "ts-mocha ./src/tests/*.spec.ts --exit --timeout 60000",
+    "start:watch": "nodemon --config './nodemon.json'"
   },
   "author": "wojdanowski",
   "license": "ISC",
