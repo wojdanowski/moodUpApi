@@ -1,12 +1,17 @@
 import mongoose from 'mongoose';
 import { IUser } from './userModel';
 
+interface Ingredients {
+	name: string;
+	quantity: string;
+}
+
 export interface IRecipeTemplate {
 	name: string;
 	shortDescription: string;
 	prepTime: string;
 	prepSteps: Array<string>;
-	ingredients: Array<string>;
+	ingredients: Array<Ingredients>;
 	author: mongoose.Types.ObjectId | Record<string, unknown>;
 	image: string;
 	_id?: any;

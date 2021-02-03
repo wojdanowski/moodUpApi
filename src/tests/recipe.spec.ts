@@ -1,6 +1,6 @@
-const { chai, app, stubbedIsAuthenticated } = require('./test_config');
-const { StatusCodes } = require('http-status-codes');
-const { getUserData, getDummyRecipe } = require('./mockDb');
+import { chai, app, stubbedIsAuthenticated } from './test_config';
+import { StatusCodes } from 'http-status-codes';
+import { getUserData, getDummyRecipe } from './mockDb';
 
 const BASE_URL = '/api/v1/recipes';
 const RECIPE_ID_NOT_EXISTENT = '5fd790724a7ab216c8920315';
@@ -20,8 +20,7 @@ describe('Recipes', () => {
 		beforeEach(function () {
 			stubbedIsAuthenticated.callsFake((req, res, next) => {
 				req.user = {
-					id: dummyUser._id,
-					role: dummyUser.role,
+					...dummyUser,
 				};
 				return next();
 			});

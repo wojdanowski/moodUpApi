@@ -1,9 +1,9 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const authController = require('./../controllers/authController');
-const sinon = require('sinon');
-const mockDb = require('./mockDb');
-const mongoose = require('mongoose');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import * as authController from './../controllers/authController';
+import sinon from 'sinon';
+import * as mockDb from './mockDb';
+import mongoose from 'mongoose';
 const { populateDB } = require('./mockDb');
 
 chai.use(chaiHttp);
@@ -16,15 +16,17 @@ import app from './../server';
 
 stubbedIsAuthenticated.restore();
 
-before(async function () {
+before(async function (): Promise<void> {
 	await mongoose.disconnect();
 	await mockDb.connect();
 	await populateDB();
 });
 
-after(async () => {
-	await mongoose.disconnect();
-	await mockDb.mongoFakeServer.stop();
-});
+after(
+	async (): Promise<void> => {
+		await mongoose.disconnect();
+		await mockDb.mongoFakeServer.stop();
+	}
+);
 
-export { chai, chaiHttp, originalIsAuthenticated, stubbedIsAuthenticated, app };
+export { chai, originalIsAuthenticated, stubbedIsAuthenticated, app };
