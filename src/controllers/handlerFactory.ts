@@ -3,6 +3,7 @@ import { catchAsync } from './../utils/catchAsync';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
+import { StatusMessages } from '../utils/StatusMessages';
 
 const deleteOne = (Model: mongoose.Model<any>) =>
 	catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +19,7 @@ const deleteOne = (Model: mongoose.Model<any>) =>
 		}
 
 		res.status(StatusCodes.ACCEPTED).json({
-			status: 'success',
+			status: StatusMessages.Success,
 			data: null,
 		});
 	});

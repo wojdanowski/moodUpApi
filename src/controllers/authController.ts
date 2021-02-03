@@ -9,6 +9,7 @@ import { Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
+import { StatusMessages } from './../utils/StatusMessages';
 
 const signToken = (id: string): string => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
@@ -47,7 +48,7 @@ const createSendToken = (
 	);
 
 	res.status(statusCode).json({
-		status: 'success',
+		status: StatusMessages.Success,
 		token,
 		data: {
 			user: userWithoutPass,
@@ -146,7 +147,7 @@ const logout = catchAsync(
 		await delFromCache(token);
 
 		res.status(StatusCodes.OK).json({
-			status: 'success',
+			status: StatusMessages.Success,
 		});
 	}
 );

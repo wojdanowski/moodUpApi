@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from 'express';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
+import { StatusMessages } from '../utils/StatusMessages';
 
 const handleDuplicateFieldsDB = (err: any): AppError => {
 	const value = err.keyValue.name;
@@ -51,7 +52,7 @@ const sendErrorProd = (err: any, res: Response): void => {
 		// 1) Log error
 		console.error(`ERROR`, err);
 		res.status(500).json({
-			status: 'error',
+			status: StatusMessages.Error,
 			message: 'Something went very wrong!',
 		});
 	}

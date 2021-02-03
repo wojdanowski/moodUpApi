@@ -1,3 +1,5 @@
+import { StatusMessages } from './../utils/StatusMessages';
+
 export default class AppError extends Error {
 	statusCode: number;
 	status: string;
@@ -7,7 +9,9 @@ export default class AppError extends Error {
 		super();
 
 		this.statusCode = statusCode;
-		this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+		this.status = `${statusCode}`.startsWith('4')
+			? StatusMessages.Fail
+			: StatusMessages.Error;
 		this.message = message;
 		this.isOperational = true;
 

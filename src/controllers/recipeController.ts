@@ -5,6 +5,7 @@ import ApiFeatures from './../utils/apiFeatures';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
+import { StatusMessages } from '../utils/StatusMessages';
 
 const deleteRecipe = deleteOne(Recipe);
 
@@ -23,7 +24,7 @@ const getRecipe = catchAsync(
 		}
 
 		res.status(StatusCodes.OK).json({
-			status: 'success',
+			status: StatusMessages.Success,
 			data: {
 				data: doc,
 			},
@@ -53,7 +54,7 @@ const getAllRecipes = catchAsync(
 		}
 
 		res.status(StatusCodes.OK).json({
-			status: 'success',
+			status: StatusMessages.Success,
 			results: doc.length,
 			data: {
 				data: doc,
@@ -71,7 +72,7 @@ const createRecipe = catchAsync(
 		const doc: IRecipe | null = await Recipe.create(recipe);
 
 		res.status(StatusCodes.CREATED).json({
-			status: 'success',
+			status: StatusMessages.Success,
 			data: {
 				data: doc,
 			},
@@ -115,7 +116,7 @@ const updateRecipe = catchAsync(
 		}
 
 		res.status(StatusCodes.OK).json({
-			status: 'success',
+			status: StatusMessages.Success,
 			data: {
 				data: doc,
 			},
