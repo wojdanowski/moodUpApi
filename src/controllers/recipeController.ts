@@ -10,7 +10,7 @@ import { StatusMessages } from '../utils/StatusMessages';
 const deleteRecipe = deleteOne(Recipe);
 
 const getRecipe = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const doc: IRecipe | null =
 			req.validData && (await Recipe.findById(req.validData.id));
 
@@ -33,7 +33,7 @@ const getRecipe = catchAsync(
 );
 
 const getAllRecipes = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const user: string = req.user._id;
 		const searchQuery: object =
 			req.user.role === 'user' ? { author: user } : {};
@@ -64,7 +64,7 @@ const getAllRecipes = catchAsync(
 );
 
 const createRecipe = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const recipe: IRecipeTemplate = {
 			...req.body,
 			author: req.user._id,
@@ -81,7 +81,7 @@ const createRecipe = catchAsync(
 );
 
 const updateRecipe = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const author: IRecipe | null = await Recipe.findById(
 			req.params.id,
 			'author'

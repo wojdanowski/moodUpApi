@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { catchAsync, ReturnedFunc } from './../utils/catchAsync';
+import { catchAsync, RequestHandler } from './../utils/catchAsync';
 import passport from 'passport';
 import User, { IUser, IUserTemplate, UserPublic } from './../models/userModel';
 import Recipe, { IRecipe } from './../models/recipeModel';
@@ -156,7 +156,7 @@ const isAuthenticated: any = passport.authenticate(Bearer, {
 	session: false,
 });
 
-const restrictTo = (...roles: Array<string>): ReturnedFunc => {
+const restrictTo = (...roles: Array<string>): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.user.role)) {
 			return next(

@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 
-export interface ReturnedFunc {
+export interface RequestHandler {
 	(req: Request, res: Response, next: NextFunction): void;
 }
 
-interface InputFunc {
-	(...[req, res, next]: Parameters<ReturnedFunc>): Promise<void>;
+export interface AsyncRequestHandler<T = any> {
+	(...[req, res, next]: Parameters<RequestHandler>): Promise<T>;
 }
 
-export const catchAsync = (fn: InputFunc): ReturnedFunc => {
+export const catchAsync = (fn: AsyncRequestHandler): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		fn(req, res, next).catch(next);
 	};
