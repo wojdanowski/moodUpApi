@@ -10,6 +10,8 @@ import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
 import { StatusMessages } from './../utils/StatusMessages';
+import { v4 as uuidV4 } from 'uuid';
+import bcryptjs from 'bcryptjs';
 
 const signToken = (id: string): string => {
 	return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
@@ -58,9 +60,50 @@ const createSendToken = (
 
 const createApiKey = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		//
+		const apiKey: string = uuidV4() + '-' + uuidV4();
+		const cryptKey: string = await bcryptjs.hash(
+			apiKey,
+			parseInt(process.env.SALT!, 10)
+		);
+		if (!req.user) {
+			return next(
+				new AppError('Please log in', StatusCodes.UNAUTHORIZED)
+			);
+		}
+		const user = await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				apiKey: cryptKey,
+			},
+			{ new: true }
+		);
+		if (!user) {
+			return next(new AppError('User not found', StatusCodes.NOT_FOUND));
+		}
 		res.status(StatusCodes.OK).json({
-			status: 'Create api test',
+			status: StatusMessages.Success,
+			apiKey: user.apiKey,
+		});
+	}
+);
+
+const removeApiKey = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		if (!req.user) {
+			return next(
+				new AppError('Please log in', StatusCodes.UNAUTHORIZED)
+			);
+		}
+		await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				$unset: { apiKey: '' },
+			},
+			{ new: true }
+		);
+
+		res.status(StatusCodes.OK).json({
+			status: StatusMessages.Success,
 		});
 	}
 );
@@ -233,4 +276,5 @@ export {
 	restrictToOwner,
 	logout,
 	createApiKey,
+	removeApiKey,
 };

@@ -6,10 +6,9 @@ const router = express.Router();
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
-router.post(
-	'/createApiKey',
-	authController.isAuthenticated,
-	authController.createApiKey
-);
+router
+	.route('/apiKey')
+	.post(authController.isAuthenticated, authController.createApiKey)
+	.delete(authController.isAuthenticated, authController.removeApiKey);
 
 export default router;

@@ -9,6 +9,7 @@ export interface IUserTemplate {
 	passwordConfirm: string | undefined;
 	role: string;
 	_id?: any;
+	apiKey?: string | undefined;
 }
 
 export interface IUser extends mongoose.Document, IUserTemplate {}
@@ -56,6 +57,9 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		enum: ['user', 'admin'],
 		default: 'user',
+	},
+	apiKey: {
+		type: String,
 	},
 });
 
