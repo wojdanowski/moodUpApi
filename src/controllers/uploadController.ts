@@ -1,19 +1,29 @@
 import { catchAsync } from './../utils/catchAsync';
 import AppError from './../utils/appError';
 import { StatusMessages } from '../utils/StatusMessages';
-const upload = require('./../services/fileUpload');
+import { NextFunction, Request, Response } from 'express';
+import { upload } from './../services/fileUpload';
+import { StatusCodes } from 'http-status-codes';
 
 const singleUpload = upload.single('image');
 
-const uploadImage = catchAsync(async (req: any, res: any, next: any) => {
-	singleUpload(req, res, function (err: any) {
-		if (err) return next(new AppError('File Upload Error', 400));
-		if (!req.file) return next(new AppError('No file provided', 400));
-		res.status(201).json({
-			status: StatusMessages.Success,
-			imageUrl: req.file.location,
+const uploadImage = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		singleUpload(req, res, function (err: any) {
+			if (err)
+				return next(
+					new AppError('File Upload Error', StatusCodes.BAD_REQUEST)
+				);
+			if (!req.file)
+				return next(
+					new AppError('No file provided', StatusCodes.BAD_REQUEST)
+				);
+			res.status(201).json({
+				status: StatusMessages.Success,
+				imageUrl: req.file.destination,
+			});
 		});
-	});
-});
+	}
+);
 
 export { uploadImage };
