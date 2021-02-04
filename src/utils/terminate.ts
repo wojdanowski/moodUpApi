@@ -1,4 +1,3 @@
-import { RefreshClosedReports } from 'aws-sdk/clients/cur';
 import { Server } from 'http';
 
 interface CloseFunction {
