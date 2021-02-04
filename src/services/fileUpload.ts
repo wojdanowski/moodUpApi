@@ -43,7 +43,11 @@ const upload = multer({
 		): void {
 			cb(null, { fieldName: 'testing metadata' });
 		},
-		key: function (req, file, cb) {
+		key: function (
+			req: Request,
+			file: Express.Multer.File,
+			cb: (error: any, key?: string) => void
+		): void {
 			cb(null, Date.now().toString() + '/' + file.originalname);
 		},
 	}),
