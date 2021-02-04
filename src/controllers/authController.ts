@@ -56,6 +56,15 @@ const createSendToken = (
 	});
 };
 
+const createApiKey = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		//
+		res.status(StatusCodes.OK).json({
+			status: 'Create api test',
+		});
+	}
+);
+
 const signup = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const userDetails: IUserTemplate = {
@@ -152,9 +161,19 @@ const logout = catchAsync(
 	}
 );
 
-const isAuthenticated: any = passport.authenticate(Bearer, {
-	session: false,
-});
+const isAuthenticated = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+): void => {
+	// Choose strategy
+	if (req.headers.api_key) {
+		console.log(`use api key strategy`);
+	}
+	return passport.authenticate(Bearer, {
+		session: false,
+	})(req, res, next);
+};
 
 const restrictTo = (...roles: Array<string>): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
@@ -206,4 +225,12 @@ const restrictToOwner = catchAsync(
 	}
 );
 
-export { signup, login, isAuthenticated, restrictTo, restrictToOwner, logout };
+export {
+	signup,
+	login,
+	isAuthenticated,
+	restrictTo,
+	restrictToOwner,
+	logout,
+	createApiKey,
+};

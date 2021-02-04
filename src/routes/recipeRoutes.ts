@@ -4,11 +4,10 @@ import * as authController from './../controllers/authController';
 const router = express.Router();
 import { validateId, validDataToRequest } from './../validators/validation';
 
-router.use(authController.isAuthenticated);
-
 router
 	.route('/')
 	.get(
+		authController.isAuthenticated,
 		authController.restrictTo('admin', 'user'),
 		recipeController.getAllRecipes
 	)
@@ -20,6 +19,7 @@ router
 router
 	.route('/:id')
 	.get(
+		authController.isAuthenticated,
 		authController.restrictTo('admin', 'user'),
 		validateId,
 		validDataToRequest,
@@ -27,6 +27,7 @@ router
 		recipeController.getRecipe
 	)
 	.patch(
+		authController.isAuthenticated,
 		authController.restrictTo('admin', 'user'),
 		validateId,
 		validDataToRequest,
@@ -34,6 +35,7 @@ router
 		recipeController.updateRecipe
 	)
 	.delete(
+		authController.isAuthenticated,
 		authController.restrictTo('admin', 'user'),
 		validateId,
 		validDataToRequest,
