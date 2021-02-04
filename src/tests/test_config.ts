@@ -4,7 +4,7 @@ import * as authController from './../controllers/authController';
 import sinon from 'sinon';
 import * as mockDb from './mockDb';
 import mongoose from 'mongoose';
-const { populateDB } = require('./mockDb');
+import { populateDB } from './mockDb';
 
 chai.use(chaiHttp);
 chai.should();
