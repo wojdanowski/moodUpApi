@@ -5,10 +5,12 @@ import {
 import jwt from 'jsonwebtoken';
 import { Strategy } from 'passport';
 import { getFromCache, setToCache } from './../redis';
+import { StatusCodes } from 'http-status-codes';
 
 import User from './../models/userModel';
+import AppError from '../utils/appError';
 
-type decodedToken = {
+type DecodedToken = {
 	id: string;
 	iat: number;
 	exp: number;
@@ -19,7 +21,7 @@ const authorizeToken = async (
 ) => {
 	try {
 		let currentUser;
-		const cachedUser = await getFromCache(accessToken);
+		const cachedUser: string | null = await getFromCache(accessToken);
 
 		if (cachedUser) {
 			return callback(null, JSON.parse(cachedUser), {
@@ -27,21 +29,28 @@ const authorizeToken = async (
 			});
 		}
 
-		const verifyToken = (token: string, secret: string): Promise<any> => {
+		const verifyToken = (
+			token: string,
+			secret: string
+		): Promise<object | undefined> => {
 			return new Promise((resolve, reject) => {
 				jwt.verify(token, secret, (err, decoded) => {
-					if (err) return reject(err);
-					else return resolve(decoded);
+					if (err)
+						return reject(
+							new AppError(err.message, StatusCodes.UNAUTHORIZED)
+						);
+					return resolve(decoded);
 				});
 			});
 		};
 
-		const decoded: decodedToken = await verifyToken(
-			accessToken,
-			process.env.JWT_SECRET!
-		);
+		const decoded = await verifyToken(accessToken, process.env.JWT_SECRET!);
 
-		currentUser = await User.findById(decoded.id);
+		if (!decoded || !(<DecodedToken>decoded).id) {
+			return new AppError('Wrong token', StatusCodes.UNAUTHORIZED);
+		}
+
+		currentUser = await User.findById((<DecodedToken>decoded).id);
 		if (!currentUser) {
 			return callback(null, false, { scope: '*' });
 		}

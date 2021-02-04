@@ -40,7 +40,7 @@ const sendErrorDev = (err: any, res: Response): void => {
 	});
 };
 
-const sendErrorProd = (err: any, res: Response): void => {
+const sendErrorProd = (err: AppError, res: Response): void => {
 	// Operational, trusted error: send message to client
 	if (err.isOperational) {
 		res.status(err.statusCode).json({
