@@ -1,6 +1,4 @@
 import redis, { RedisClient } from 'redis';
-import AppError from './utils/appError';
-import { StatusCodes } from 'http-status-codes';
 
 const redisUrl: string = process.env.REDIS_URL!;
 const redisPort: number = parseInt(process.env.REDIS_PORT!, 10);

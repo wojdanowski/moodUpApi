@@ -1,8 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
-
-export interface RequestHandler {
-	(req: Request, res: Response, next: NextFunction): void;
-}
+import { NextFunction, Request, Response, RequestHandler } from 'express';
 
 export interface AsyncRequestHandler<T = any> {
 	(...[req, res, next]: Parameters<RequestHandler>): Promise<T>;
