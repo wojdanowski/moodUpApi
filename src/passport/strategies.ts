@@ -7,7 +7,7 @@ import { Strategy } from 'passport';
 import { getFromCache, setToCache } from './../redis';
 import { StatusCodes } from 'http-status-codes';
 
-import User from './../models/userModel';
+import User, { IUserTemplate } from './../models/userModel';
 import AppError from '../utils/appError';
 
 type DecodedToken = {
@@ -20,7 +20,7 @@ const authorizeToken = async (
 	...[req, accessToken, callback]: Parameters<VerifyFunctionWithRequest>
 ) => {
 	try {
-		let currentUser;
+		let currentUser: IUserTemplate | null;
 		const cachedUser: string | null = await getFromCache(accessToken);
 
 		if (cachedUser) {
