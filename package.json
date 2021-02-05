@@ -29,6 +29,7 @@
     "multer": "1.4.2",
     "multer-s3": "2.9.0",
     "passport": "0.4.1",
+    "passport-headerapikey": "1.2.2",
     "passport-http-bearer": "1.0.1",
     "util": "0.12.3",
     "uuid": "8.3.2",

@@ -5,7 +5,7 @@ import User, { IUser, IUserTemplate, UserPublic } from './../models/userModel';
 import Recipe, { IRecipe } from './../models/recipeModel';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
-import { Bearer } from './../passport/strategies';
+import { ApiKey, Bearer } from './../passport/strategies';
 import {
 	CookieOptions,
 	NextFunction,
@@ -66,17 +66,14 @@ const createSendToken = (
 
 const createApiKey = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const apiKey: string = uuidV4() + '-' + uuidV4();
-		const cryptKey: string = await bcryptjs.hash(
-			apiKey,
-			parseInt(process.env.SALT!, 10)
-		);
 		if (!req.user) {
 			return next(
 				new AppError('Please log in', StatusCodes.UNAUTHORIZED)
 			);
 		}
-		const user = await User.findByIdAndUpdate(
+		const apiKey: string = `${req.user._id}/${uuidV4()}-${uuidV4()}`;
+		const cryptKey: string = await bcryptjs.hash(apiKey, process.env.SALT!);
+		const user: IUser | null = await User.findByIdAndUpdate(
 			req.user._id,
 			{
 				apiKey: cryptKey,
@@ -88,7 +85,7 @@ const createApiKey = catchAsync(
 		}
 		res.status(StatusCodes.OK).json({
 			status: StatusMessages.Success,
-			apiKey: user.apiKey,
+			apiKey: apiKey,
 		});
 	}
 );
@@ -215,9 +212,10 @@ const isAuthenticated = (
 	res: Response,
 	next: NextFunction
 ): void => {
-	// Choose strategy
 	if (req.headers.api_key) {
-		console.log(`use api key strategy`);
+		return passport.authenticate(ApiKey, {
+			session: false,
+		})(req, res, next);
 	}
 	return passport.authenticate(Bearer, {
 		session: false,

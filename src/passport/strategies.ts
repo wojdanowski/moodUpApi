@@ -2,13 +2,17 @@ import {
 	Strategy as BearerStrategy,
 	VerifyFunctionWithRequest,
 } from 'passport-http-bearer';
+import passportHeaderapikey from 'passport-headerapikey';
+import bcryptjs from 'bcryptjs';
+
 import jwt from 'jsonwebtoken';
 import { Strategy } from 'passport';
 import { getFromCache, setToCache } from './../redis';
 import { StatusCodes } from 'http-status-codes';
 
-import User, { IUserTemplate } from './../models/userModel';
+import User, { IUser, IUserTemplate } from './../models/userModel';
 import AppError from '../utils/appError';
+import { Request } from 'express';
 
 type DecodedToken = {
 	id: string;
@@ -70,6 +74,45 @@ const authorizeToken = async (
 	}
 };
 
+const verifyApiKey = async (
+	apiKey: string,
+	callback: (
+		err: Error | null,
+		user?: Object,
+		info?: Object,
+		req?: Request
+	) => void
+): Promise<void> => {
+	try {
+		const userId: string = apiKey.split('/')[0];
+		const user: IUser | null = await User.findById(userId);
+		if (!user || !user.apiKey) {
+			const error: Error = new AppError(
+				'User or key not found',
+				StatusCodes.NOT_FOUND
+			);
+			return callback(error, false, { scope: '*' });
+		}
+
+		const isKeyCorrect: boolean | null = await bcryptjs.compare(
+			apiKey,
+			user.apiKey
+		);
+		if (!isKeyCorrect) {
+			const error: Error = new AppError(
+				'ApiKey is not correct',
+				StatusCodes.UNAUTHORIZED
+			);
+			return callback(error, false, { scope: '*' });
+		}
+		callback(null, user, {
+			scope: '*',
+		});
+	} catch (e) {
+		callback(e, false, { scope: '*' });
+	}
+};
+
 const Bearer: Strategy = new BearerStrategy(
 	{
 		passReqToCallback: true,
@@ -77,4 +120,10 @@ const Bearer: Strategy = new BearerStrategy(
 	authorizeToken
 );
 
-export { authorizeToken, Bearer };
+const ApiKey: Strategy = new passportHeaderapikey(
+	{ header: 'api_key', prefix: '' },
+	true,
+	verifyApiKey
+);
+
+export { authorizeToken, Bearer, ApiKey };
