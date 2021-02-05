@@ -14,6 +14,7 @@ import AppError from './utils/appError';
 import recipeRouter from './routes/recipeRoutes';
 import userRouter from './routes/userRoutes';
 import imageUploadRouter from './routes/imageUploadRoutes';
+import docsRouter from './routes/docsRoutes';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/images', imageUploadRouter);
+app.use('/api/v1/apiDocs', docsRouter);
 
 //  Handle wrong/undefined routs
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
