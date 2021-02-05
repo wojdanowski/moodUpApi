@@ -8,7 +8,7 @@ import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
 
 import { usePassportStrategies } from './passport/passport';
-import { Bearer } from './passport/strategies';
+import { ApiKey, Bearer } from './passport/strategies';
 import globalErrorHandler from './controllers/errorController';
 import AppError from './utils/appError';
 import recipeRouter from './routes/recipeRoutes';
@@ -35,7 +35,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
 app.use(passport.initialize());
-usePassportStrategies([Bearer]);
+usePassportStrategies([Bearer, ApiKey]);
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req: Request, res: Response) => {

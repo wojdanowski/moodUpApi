@@ -1,12 +1,12 @@
 import {
 	Strategy as BearerStrategy,
+	VerifyFunctions,
 	VerifyFunctionWithRequest,
 } from 'passport-http-bearer';
 import passportHeaderapikey from 'passport-headerapikey';
 import bcryptjs from 'bcryptjs';
 
 import jwt from 'jsonwebtoken';
-import { Strategy } from 'passport';
 import { getFromCache, setToCache } from './../redis';
 import { StatusCodes } from 'http-status-codes';
 
@@ -113,14 +113,14 @@ const verifyApiKey = async (
 	}
 };
 
-const Bearer: Strategy = new BearerStrategy(
+const Bearer: BearerStrategy<VerifyFunctions> = new BearerStrategy(
 	{
 		passReqToCallback: true,
 	},
 	authorizeToken
 );
 
-const ApiKey: Strategy = new passportHeaderapikey(
+const ApiKey: passportHeaderapikey = new passportHeaderapikey(
 	{ header: 'api_key', prefix: '' },
 	true,
 	verifyApiKey

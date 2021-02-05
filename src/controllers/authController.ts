@@ -207,20 +207,13 @@ const logout = catchAsync(
 	}
 );
 
-const isAuthenticated = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-): void => {
-	if (req.headers.api_key) {
-		return passport.authenticate(ApiKey, {
-			session: false,
-		})(req, res, next);
-	}
-	return passport.authenticate(Bearer, {
-		session: false,
-	})(req, res, next);
-};
+const isAuthenticated = passport.authenticate(Bearer, {
+	session: false,
+});
+
+const isAuthenticatedApi = passport.authenticate([Bearer.name, ApiKey.name], {
+	session: false,
+});
 
 const restrictTo = (...roles: Array<string>): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
@@ -275,10 +268,11 @@ const restrictToOwner = catchAsync(
 export {
 	signup,
 	login,
-	isAuthenticated,
 	restrictTo,
 	restrictToOwner,
 	logout,
 	createApiKey,
 	removeApiKey,
+	isAuthenticated,
+	isAuthenticatedApi,
 };

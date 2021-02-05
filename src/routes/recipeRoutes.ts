@@ -1,17 +1,19 @@
 import express from 'express';
 import * as recipeController from './../controllers/recipeController';
 import * as authController from './../controllers/authController';
-const router = express.Router();
 import { validateId, validDataToRequest } from './../validators/validation';
+
+const router = express.Router();
 
 router
 	.route('/')
 	.get(
-		authController.isAuthenticated,
+		authController.isAuthenticatedApi,
 		authController.restrictTo('admin', 'user'),
 		recipeController.getAllRecipes
 	)
 	.post(
+		authController.isAuthenticatedApi,
 		authController.restrictTo('admin', 'user'),
 		recipeController.createRecipe
 	);
@@ -19,7 +21,7 @@ router
 router
 	.route('/:id')
 	.get(
-		authController.isAuthenticated,
+		authController.isAuthenticatedApi,
 		authController.restrictTo('admin', 'user'),
 		validateId,
 		validDataToRequest,
@@ -27,7 +29,7 @@ router
 		recipeController.getRecipe
 	)
 	.patch(
-		authController.isAuthenticated,
+		authController.isAuthenticatedApi,
 		authController.restrictTo('admin', 'user'),
 		validateId,
 		validDataToRequest,
@@ -35,7 +37,7 @@ router
 		recipeController.updateRecipe
 	)
 	.delete(
-		authController.isAuthenticated,
+		authController.isAuthenticatedApi,
 		authController.restrictTo('admin', 'user'),
 		validateId,
 		validDataToRequest,
