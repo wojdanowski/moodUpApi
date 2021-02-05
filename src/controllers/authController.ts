@@ -1,18 +1,24 @@
 import jwt from 'jsonwebtoken';
-import { catchAsync, RequestHandler } from './../utils/catchAsync';
+import { catchAsync } from './../utils/catchAsync';
 import passport from 'passport';
 import User, { IUser, IUserTemplate, UserPublic } from './../models/userModel';
 import Recipe, { IRecipe } from './../models/recipeModel';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { Bearer } from './../passport/strategies';
-import { CookieOptions, NextFunction, Request, Response } from 'express';
+import {
+	CookieOptions,
+	NextFunction,
+	Request,
+	Response,
+	RequestHandler,
+} from 'express';
 import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
 import { StatusMessages } from './../utils/StatusMessages';
 
 const signToken = (id: string): string => {
-	return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
+	return jwt.sign({ id }, process.env.JWT_SECRET!, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
 };
