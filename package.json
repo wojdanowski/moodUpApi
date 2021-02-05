@@ -4,12 +4,10 @@
   "description": "Mood Up Rest Api",
   "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "start:debug": "node --nolazy --inspect-brk=38009 server.js",
-    "start:dev": "SET NODE_ENV=development&& nodemon server.js",
-    "start:prod": "SET NODE_ENV=production&& nodemon server.js",
-    "debug": "ndb server.js",
-    "test": "mocha tests/*.spec.js --exit --timeout 60000"
+    "start": "ts-node ./src/server.ts",
+    "start:debug": "node --nolazy --inspect=38009 -r ts-node/register ./src/server",
+    "start:test": "ts-mocha ./src/tests/*.spec.ts --exit --timeout 60000",
+    "start:watch": "nodemon --config './nodemon.json'"
   },
   "author": "wojdanowski",
   "license": "ISC",
@@ -40,11 +38,34 @@
     "node": "14.15.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "2.4.2",
+    "@types/chai": "4.2.14",
+    "@types/chai-http": "4.2.0",
+    "@types/cookie-parser": "1.4.2",
+    "@types/cors": "2.8.9",
+    "@types/expect": "24.3.0",
+    "@types/express": "4.17.11",
+    "@types/express-rate-limit": "5.1.1",
+    "@types/jsonwebtoken": "8.5.0",
+    "@types/mocha": "8.2.0",
+    "@types/mongoose": "5.10.3",
+    "@types/morgan": "1.9.2",
+    "@types/multer": "1.4.5",
+    "@types/multer-s3": "2.7.9",
+    "@types/node": "14.14.22",
+    "@types/passport": "1.0.5",
+    "@types/passport-http-bearer": "1.0.36",
+    "@types/redis": "2.8.28",
+    "@types/sinon": "9.0.10",
+    "@types/validator": "13.1.3",
     "chai": "4.2.0",
     "chai-http": "4.3.0",
     "decache": "4.6.0",
     "mocha": "8.2.1",
     "mongodb-memory-server": "6.9.3",
-    "sinon": "9.2.3"
+    "sinon": "9.2.3",
+    "ts-mocha": "8.0.0",
+    "ts-node": "9.1.1",
+    "typescript": "4.1.3"
   }
 }
