@@ -1,15 +1,13 @@
-const express = require('express');
+import express from 'express';
+import * as authController from './../controllers/authController';
+import { uploadImage } from './../controllers/uploadController';
+
 const router = express.Router();
-const authController = require('./../controllers/authController');
-const uploadController = require('./../controllers/uploadController');
 
 router.use(authController.isAuthenticated);
 
 router
 	.route('/upload-image')
-	.post(
-		authController.restrictTo('admin', 'user'),
-		uploadController.uploadImage
-	);
+	.post(authController.restrictTo('admin', 'user'), uploadImage);
 
 export default router;
