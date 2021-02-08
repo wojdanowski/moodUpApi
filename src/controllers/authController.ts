@@ -73,7 +73,7 @@ export const createApiKey = catchAsync(
 		}
 		const apiKey: string = `${req.user._id}/${uuidV4()}-${uuidV4()}`;
 		const cryptKey: string = await bcryptjs.hash(apiKey, process.env.SALT!);
-		const user: IUser | null = await User.findByIdAndUpdate(
+		const user = await User.findByIdAndUpdate(
 			req.user._id,
 			{
 				apiKey: cryptKey,
@@ -240,10 +240,7 @@ export const restrictToOwner = catchAsync(
 			);
 		}
 
-		const docAuthor: IRecipe | null = await Recipe.findById(
-			req.validData.id,
-			'author'
-		);
+		const docAuthor = await Recipe.findById(req.validData.id, 'author');
 		if (!docAuthor) {
 			return next(
 				new AppError(
