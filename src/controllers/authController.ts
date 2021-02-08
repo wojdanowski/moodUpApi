@@ -64,7 +64,7 @@ const createSendToken = (
 	});
 };
 
-const createApiKey = catchAsync(
+export const createApiKey = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		if (!req.user) {
 			return next(
@@ -90,7 +90,7 @@ const createApiKey = catchAsync(
 	}
 );
 
-const removeApiKey = catchAsync(
+export const removeApiKey = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		if (!req.user) {
 			return next(
@@ -111,7 +111,7 @@ const removeApiKey = catchAsync(
 	}
 );
 
-const signup = catchAsync(
+export const signup = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const userDetails: IUserTemplate = {
 			name: req.body.name,
@@ -129,7 +129,7 @@ const signup = catchAsync(
 	}
 );
 
-const login = catchAsync(
+export const login = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const {
 			email,
@@ -179,7 +179,7 @@ const login = catchAsync(
 	}
 );
 
-const logout = catchAsync(
+export const logout = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		let token: string | undefined;
 		if (req.headers.authorization) {
@@ -207,15 +207,18 @@ const logout = catchAsync(
 	}
 );
 
-const isAuthenticated = passport.authenticate(Bearer, {
+export const isAuthenticated = passport.authenticate(Bearer, {
 	session: false,
 });
 
-const isAuthenticatedApi = passport.authenticate([Bearer.name, ApiKey.name], {
-	session: false,
-});
+export const isAuthenticatedApi = passport.authenticate(
+	[Bearer.name, ApiKey.name],
+	{
+		session: false,
+	}
+);
 
-const restrictTo = (...roles: Array<string>): RequestHandler => {
+export const restrictTo = (...roles: Array<string>): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.user.role)) {
 			return next(
@@ -229,7 +232,7 @@ const restrictTo = (...roles: Array<string>): RequestHandler => {
 	};
 };
 
-const restrictToOwner = catchAsync(
+export const restrictToOwner = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		if (!req.validData.id) {
 			return next(
@@ -264,15 +267,3 @@ const restrictToOwner = catchAsync(
 		next();
 	}
 );
-
-export {
-	signup,
-	login,
-	restrictTo,
-	restrictToOwner,
-	logout,
-	createApiKey,
-	removeApiKey,
-	isAuthenticated,
-	isAuthenticatedApi,
-};
