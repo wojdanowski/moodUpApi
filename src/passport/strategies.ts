@@ -78,23 +78,23 @@ const verifyApiKey = async (
 	apiKey: string,
 	callback: (
 		err: Error | null,
-		user?: Object,
-		info?: Object,
+		user?: IUser,
+		info?: Record<string, unknown>,
 		req?: Request
 	) => void
 ): Promise<void> => {
 	try {
 		const userId: string = apiKey.split('/')[0];
-		const user: IUser | null = await User.findById(userId);
+		const user = await User.findById(userId);
 		if (!user || !user.apiKey) {
 			const error: Error = new AppError(
 				'User or key not found',
 				StatusCodes.NOT_FOUND
 			);
-			return callback(error, false, { scope: '*' });
+			return callback(error);
 		}
 
-		const isKeyCorrect: boolean | null = await bcryptjs.compare(
+		const isKeyCorrect: boolean = await bcryptjs.compare(
 			apiKey,
 			user.apiKey
 		);
@@ -103,13 +103,13 @@ const verifyApiKey = async (
 				'ApiKey is not correct',
 				StatusCodes.UNAUTHORIZED
 			);
-			return callback(error, false, { scope: '*' });
+			return callback(error);
 		}
 		callback(null, user, {
 			scope: '*',
 		});
 	} catch (e) {
-		callback(e, false, { scope: '*' });
+		callback(e);
 	}
 };
 
