@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { catchAsync } from '../utils/catchAsync';
-import { StatusMessages } from '../utils/StatusMessages';
+import path from 'path';
 
 const getApiDocumentation = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-		res.status(StatusCodes.CREATED).json({
-			status: StatusMessages.Success,
-			data: {
-				documentation:
-					'https://documenter.getpostman.com/view/8475867/TW74hQC9',
+		const options = {
+			headers: {
+				'Content-Security-Policy':
+					"default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'",
 			},
-		});
+		};
+
+		res.sendFile(path.join(__dirname, '../public/index.html'), options);
 	}
 );
 
