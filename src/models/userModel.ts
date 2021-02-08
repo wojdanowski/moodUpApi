@@ -9,7 +9,7 @@ export interface IUserTemplate {
 	passwordConfirm: string | undefined;
 	role: string;
 	_id?: any;
-	apiKey?: string | undefined;
+	apiKey?: string;
 }
 
 export interface IUser extends mongoose.Document, IUserTemplate {}

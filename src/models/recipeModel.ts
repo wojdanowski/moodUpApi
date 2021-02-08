@@ -12,7 +12,7 @@ export interface IRecipeTemplate {
 	prepTime: string;
 	prepSteps: Array<string>;
 	ingredients: Array<Ingredients>;
-	author: mongoose.Types.ObjectId | Record<string, unknown>;
+	author: mongoose.Types.ObjectId | string;
 	image: string;
 	_id?: any;
 }
