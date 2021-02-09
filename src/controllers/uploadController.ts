@@ -8,25 +8,21 @@ import { StatusCodes } from 'http-status-codes';
 const singleUpload = upload.single('image');
 
 const uploadImage = catchAsync(
-	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-		singleUpload(req, res, (err: any): void => {
-			if (err) {
-				return next(
-					new AppError('File Upload Error', StatusCodes.BAD_REQUEST)
-				);
-			}
-			if (!req.file) {
-				return next(
-					new AppError('No file provided', StatusCodes.BAD_REQUEST)
-				);
-			}
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    singleUpload(req, res, (err: any): void => {
+      if (err) {
+        return next(new AppError('File Upload Error', StatusCodes.BAD_REQUEST));
+      }
+      if (!req.file) {
+        return next(new AppError('No file provided', StatusCodes.BAD_REQUEST));
+      }
 
-			res.status(201).json({
-				status: StatusMessages.Success,
-				imageUrl: req.file.destination,
-			});
-		});
-	}
+      res.status(201).json({
+        status: StatusMessages.Success,
+        imageUrl: req.file.destination,
+      });
+    });
+  },
 );
 
 export { uploadImage };

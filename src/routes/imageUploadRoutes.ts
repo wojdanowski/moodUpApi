@@ -6,8 +6,6 @@ const router = express.Router();
 
 router.use(authController.isAuthenticated);
 
-router
-	.route('/upload-image')
-	.post(authController.restrictTo('admin', 'user'), uploadImage);
+router.route('/upload-image').post(authController.restrictTo('admin', 'user'), uploadImage);
 
 export default router;
