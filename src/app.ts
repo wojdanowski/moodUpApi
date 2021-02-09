@@ -19,15 +19,15 @@ import docsRouter from './routes/docsRoutes';
 const app = express();
 
 const limiter = rateLimit({
-	max: 600,
-	windowMs: 60 * 60 * 1000,
-	message: 'Too many requests from this Ip, please try again in an hour!',
+  max: 600,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this Ip, please try again in an hour!',
 });
 app.use('/api', limiter);
 
 // Setting the development mode
 if (process.env.NODE_ENV === 'development') {
-	app.use(morgan('dev'));
+  app.use(morgan('dev'));
 }
 
 app.use(cors());
@@ -40,7 +40,7 @@ usePassportStrategies([Bearer, ApiKey]);
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req: Request, res: Response) => {
-	res.send('Hello from server');
+  res.send('Hello from server');
 });
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
@@ -49,12 +49,7 @@ app.use('/api/v1/apiDocs', docsRouter);
 
 //  Handle wrong/undefined routs
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
-	next(
-		new AppError(
-			`Can't find ${req.originalUrl} on this server!`,
-			StatusCodes.NOT_FOUND
-		)
-	);
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, StatusCodes.NOT_FOUND));
 });
 
 app.use(globalErrorHandler);
