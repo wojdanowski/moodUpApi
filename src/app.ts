@@ -8,12 +8,13 @@ import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
 
 import { usePassportStrategies } from './passport/passport';
-import { Bearer } from './passport/strategies';
+import { ApiKey, Bearer } from './passport/strategies';
 import globalErrorHandler from './controllers/errorController';
 import AppError from './utils/appError';
 import recipeRouter from './routes/recipeRoutes';
 import userRouter from './routes/userRoutes';
 import imageUploadRouter from './routes/imageUploadRoutes';
+import docsRouter from './routes/docsRoutes';
 
 const app = express();
 
@@ -35,7 +36,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
 app.use(passport.initialize());
-usePassportStrategies([Bearer]);
+usePassportStrategies([Bearer, ApiKey]);
 
 // ROUTES ---------------------------------------------------
 app.get('/', (req: Request, res: Response) => {
@@ -44,6 +45,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/v1/recipes', recipeRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/images', imageUploadRouter);
+app.use('/api/v1/apiDocs', docsRouter);
 
 //  Handle wrong/undefined routs
 app.all('*', (req: Request, res: Response, next: NextFunction) => {

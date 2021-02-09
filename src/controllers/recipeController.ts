@@ -65,7 +65,7 @@ const getAllRecipes = catchAsync(
 
 const createRecipe = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-		const recipe: IRecipeTemplate = {
+		const recipe: IRecipe = {
 			...req.body,
 			author: req.user._id,
 		};
@@ -94,7 +94,7 @@ const updateRecipe = catchAsync(
 				)
 			);
 		}
-		const recipe: IRecipeTemplate = {
+		const recipe: IRecipe = {
 			...req.body,
 			author: author._id,
 		};

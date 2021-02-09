@@ -5,7 +5,7 @@ import User, { IUser, IUserTemplate, UserPublic } from './../models/userModel';
 import Recipe, { IRecipe } from './../models/recipeModel';
 import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
-import { Bearer } from './../passport/strategies';
+import { ApiKey, Bearer } from './../passport/strategies';
 import {
 	CookieOptions,
 	NextFunction,
@@ -16,6 +16,8 @@ import {
 import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
 import { StatusMessages } from './../utils/StatusMessages';
+import { v4 as uuidV4 } from 'uuid';
+import bcryptjs from 'bcryptjs';
 
 const signToken = (id: string): string => {
 	return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -62,7 +64,54 @@ const createSendToken = (
 	});
 };
 
-const signup = catchAsync(
+export const createApiKey = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		if (!req.user) {
+			return next(
+				new AppError('Please log in', StatusCodes.UNAUTHORIZED)
+			);
+		}
+		const apiKey: string = `${req.user._id}/${uuidV4()}-${uuidV4()}`;
+		const cryptKey: string = await bcryptjs.hash(apiKey, process.env.SALT!);
+		const user = await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				apiKey: cryptKey,
+			},
+			{ new: true }
+		);
+		if (!user) {
+			return next(new AppError('User not found', StatusCodes.NOT_FOUND));
+		}
+		res.status(StatusCodes.OK).json({
+			status: StatusMessages.Success,
+			apiKey: apiKey,
+		});
+	}
+);
+
+export const removeApiKey = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		if (!req.user) {
+			return next(
+				new AppError('Please log in', StatusCodes.UNAUTHORIZED)
+			);
+		}
+		await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				$unset: { apiKey: '' },
+			},
+			{ new: true }
+		);
+
+		res.status(StatusCodes.OK).json({
+			status: StatusMessages.Success,
+		});
+	}
+);
+
+export const signup = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const userDetails: IUserTemplate = {
 			name: req.body.name,
@@ -80,7 +129,7 @@ const signup = catchAsync(
 	}
 );
 
-const login = catchAsync(
+export const login = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const {
 			email,
@@ -130,7 +179,7 @@ const login = catchAsync(
 	}
 );
 
-const logout = catchAsync(
+export const logout = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		let token: string | undefined;
 		if (req.headers.authorization) {
@@ -158,11 +207,18 @@ const logout = catchAsync(
 	}
 );
 
-const isAuthenticated: any = passport.authenticate(Bearer, {
+export const isAuthenticated = passport.authenticate(Bearer, {
 	session: false,
 });
 
-const restrictTo = (...roles: Array<string>): RequestHandler => {
+export const isAuthenticatedApi = passport.authenticate(
+	[Bearer.name, ApiKey.name],
+	{
+		session: false,
+	}
+);
+
+export const restrictTo = (...roles: Array<string>): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.user.role)) {
 			return next(
@@ -176,7 +232,7 @@ const restrictTo = (...roles: Array<string>): RequestHandler => {
 	};
 };
 
-const restrictToOwner = catchAsync(
+export const restrictToOwner = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		if (!req.validData.id) {
 			return next(
@@ -184,10 +240,7 @@ const restrictToOwner = catchAsync(
 			);
 		}
 
-		const docAuthor: IRecipe | null = await Recipe.findById(
-			req.validData.id,
-			'author'
-		);
+		const docAuthor = await Recipe.findById(req.validData.id, 'author');
 		if (!docAuthor) {
 			return next(
 				new AppError(
@@ -211,5 +264,3 @@ const restrictToOwner = catchAsync(
 		next();
 	}
 );
-
-export { signup, login, isAuthenticated, restrictTo, restrictToOwner, logout };

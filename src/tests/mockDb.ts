@@ -3,8 +3,10 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import User, { IUserTemplate } from './../models/userModel';
 import Recipe, { IRecipe, IRecipeTemplate } from './../models/recipeModel';
 import jwt from 'jsonwebtoken';
+import bcryptjs from 'bcryptjs';
 
 const mongoFakeServer = new MongoMemoryServer();
+const apiKeyChain: string = '/randomKeyChain';
 
 export interface TestUser extends IUserTemplate {
 	_id: string;
@@ -31,7 +33,16 @@ const dummyUser: IUserTemplate = {
 
 const populateDB = async (): Promise<void> => {
 	const userDoc = await User.create({ ...dummyUser });
-	const user: IUserTemplate = userDoc.toObject();
+	const apiKey: string = `${userDoc._id}${apiKeyChain}`;
+	const cryptKey: string = await bcryptjs.hash(apiKey, process.env.SALT!);
+	const userWihApiKeyDoc = await User.findByIdAndUpdate(
+		userDoc._id,
+		{
+			apiKey: cryptKey,
+		},
+		{ new: true }
+	);
+	const user: IUserTemplate = userWihApiKeyDoc.toObject();
 
 	const dummyRecipe: IRecipeTemplate = {
 		name: 'dummy first recipe name',
@@ -61,6 +72,7 @@ const getUserData = async (): Promise<TestUser> => {
 		...foundUser,
 		_id: foundUser._id.toString(),
 		token,
+		apiKey: `${foundUser._id}${apiKeyChain}`,
 	};
 };
 

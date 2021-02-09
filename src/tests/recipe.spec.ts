@@ -1,4 +1,4 @@
-import { chai, app, stubbedIsAuthenticated } from './test_config';
+import { chai, app, stubbedIsAuthenticatedApi } from './test_config';
 import { StatusCodes } from 'http-status-codes';
 import { getUserData, getDummyRecipe, TestUser } from './mockDb';
 import { IRecipeTemplate } from '../models/recipeModel';
@@ -21,7 +21,7 @@ describe('Recipes', (): void => {
 
 	describe('GET /', (): void => {
 		beforeEach(function (): void {
-			stubbedIsAuthenticated.callsFake(
+			stubbedIsAuthenticatedApi.callsFake(
 				(req: Request, res: Response, next: NextFunction): void => {
 					req.user = {
 						...dummyUser,

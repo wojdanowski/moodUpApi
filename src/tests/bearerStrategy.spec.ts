@@ -3,15 +3,15 @@ import { chai, sinon } from './test_config';
 import { authorizeToken } from './../passport/strategies';
 import { getUserData, TestUser } from './mockDb';
 
-describe('auth', (): void => {
+describe('BearerToken strategy', (): void => {
 	let dummyUser: TestUser;
 
 	before(async function (): Promise<void> {
 		dummyUser = await getUserData();
 	});
 
-	describe('GET /', (): void => {
-		it('Should return user object', async function (): Promise<void> {
+	describe('authorizeToken', (): void => {
+		it('Should return user object when token is correct', async function (): Promise<void> {
 			const callback: sinon.SinonSpy<any[], any> = sinon.spy();
 			await authorizeToken(null, dummyUser.token, callback);
 			const passedArgs: any[] = callback.args[0];
