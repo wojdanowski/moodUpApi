@@ -126,4 +126,4 @@ const ApiKey: passportHeaderapikey = new passportHeaderapikey(
 	verifyApiKey
 );
 
-export { authorizeToken, Bearer, ApiKey };
+export { authorizeToken, Bearer, ApiKey, verifyApiKey };
