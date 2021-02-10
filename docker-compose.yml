@@ -1,0 +1,41 @@
+version: "3"
+services:
+  redis:
+    container_name: redis
+    image: redis:6.0.10
+    ports:
+      - "6379:6379"
+    networks:
+      - recipe-app-network
+    hostname: redis
+    restart: always
+  mongo:
+    container_name: mongo
+    image: mongo:4.4.3
+    ports:
+      - "27017:27017"
+    networks:
+      - recipe-app-network
+    hostname: mongo
+    volumes:
+      - /data/db
+    restart: always
+  backend:
+    container_name: backend
+    depends_on:
+      - redis
+      - mongo
+    build:
+      context: ./
+    ports:
+      - "3000:3000"
+    networks:
+      - recipe-app-network
+    env_file:
+      - ./config.env
+    volumes:
+      - ./config.env:/config/.env
+    restart: always
+networks:
+  recipe-app-network:
+    driver: bridge

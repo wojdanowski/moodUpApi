@@ -10,7 +10,8 @@
     "start:watch": "nodemon --config './nodemon.json'",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"**/*.ts\"",
-    "format:check": "prettier --check \"**/*.ts\""
+    "format:check": "prettier --check \"**/*.ts\"",
+    "build": "tsc"
   },
   "husky": {
     "hooks": {
