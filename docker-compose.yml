@@ -26,7 +26,8 @@ services:
       - redis
       - mongo
     build:
-      context: ./
+      context: .
+      dockerfile: DockerFile
     ports:
       - "3000:3000"
     networks:
