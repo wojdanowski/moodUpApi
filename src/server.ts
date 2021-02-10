@@ -10,9 +10,7 @@ dotenv.config({ path: './config.env' });
 import app from './app';
 import { Server } from 'http';
 
-const DB = (<string>process.env.DATABASE).replace('<PASSWORD>', <string>process.env.DATABASE_PASSWORD);
-
-mongoose.connect(DB, {
+mongoose.connect(<string>process.env.DATABASE, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
