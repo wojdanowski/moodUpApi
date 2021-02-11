@@ -18,8 +18,9 @@ services:
       - recipe-app-network
     hostname: mongo
     volumes:
-      - /Users/sebastian/Documents/mongoDbD:/data/db
+      - ./dockerEntryPoint/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     restart: always
+    command: [--auth]
   backend:
     container_name: backend
     depends_on:
