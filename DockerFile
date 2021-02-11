@@ -3,13 +3,11 @@ FROM node:14.15.0
 WORKDIR /app
 COPY package.json ./
 RUN npm install
+RUN npm install pm2 -g
 COPY ./tsconfig.json ./
 COPY ./@types ./@types
 COPY src /app/src
-RUN ls
 RUN npm run build
-RUN ls
-RUN ls dist
 
 EXPOSE 3000
-CMD [ "node", "/app/dist/server.js" ]
+CMD [ "pm2-runtime", "/app/dist/server.js" ]
