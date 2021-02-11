@@ -9,6 +9,7 @@ services:
       - recipe-app-network
     hostname: redis
     restart: always
+    command: redis-server --requirepass ${REDIS_PWD}
   mongo:
     container_name: mongo
     image: mongo:4.4.3
@@ -19,6 +20,7 @@ services:
     hostname: mongo
     volumes:
       - ./dockerEntryPoint/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - /Users/sebastian/Documents/mongoDb:/data/db
     restart: always
     command: [--auth]
   backend:
@@ -34,9 +36,9 @@ services:
     networks:
       - recipe-app-network
     env_file:
-      - ./config.env
+      - ./.env
     volumes:
-      - ./config.env:/config.env
+      - ./.env:/.env
     restart: always
 networks:
   recipe-app-network:
