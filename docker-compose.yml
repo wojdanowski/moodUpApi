@@ -18,7 +18,7 @@ services:
       - recipe-app-network
     hostname: mongo
     volumes:
-      - /data/db
+      - /Users/sebastian/Documents/mongoDbD:/data/db
     restart: always
   backend:
     container_name: backend
