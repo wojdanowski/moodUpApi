@@ -22,7 +22,9 @@ services:
       - ./dockerEntryPoint/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - /Users/sebastian/Documents/mongoDb:/data/db
     restart: always
-    command: [--auth]
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PWD}
   backend:
     container_name: backend
     depends_on:
