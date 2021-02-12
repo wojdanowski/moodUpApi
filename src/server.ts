@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import terminate from './utils/terminate';
+import * as socketIo from 'socket.io';
 
 process.on('uncaughtException', err => {
   process.exit(1);
@@ -17,8 +18,19 @@ mongoose.connect(<string>process.env.DATABASE, {
 });
 
 const port = process.env.PORT || 3000;
-
 const server: Server = app.listen(port);
+const io: socketIo.Server = new socketIo.Server();
+
+io.attach(server);
+
+io.on('connection', (socket: socketIo.Socket) => {
+  console.log('connection');
+  socket.emit('status', 'Hello from Socket.io');
+
+  socket.on('disconnect', () => {
+    console.log('client disconnected');
+  });
+});
 
 const exitHandler = terminate(server, {
   coredump: false,

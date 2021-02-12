@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+  <h1>Socket notifications</h1>
+  <div style="display: flex;">
+    <p>Host</p>
+    <input id="host" type="text" value="http://localhost">
+  </div>
+  <div style="display: flex;">
+    <p>Port</p>
+    <input id="port" type="text" value="3000">
+  </div>
+  <div style="display: flex;">
+    <p>Path</p>
+    <input id="path" type="text" value="/socket.io">
+  </div>
+  <div style="display: flex;">
+    <p>Event</p>
+    <input id="type" type="text" value="my_connect_event">
+  </div>
+  <button
+    onclick="connect(document.getElementById('host').value, document.getElementById('port').value, document.getElementById('path').value)">Connect</button>
+  <button onclick="disconnect()">Disconnect</button>
+  <div id="log"></div>
+  <!-- I'm using server's socket.io script file. You can also use socket.io-client npm package -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket;
+
+    function connect(host, port, path) {
+      if (!socket) {
+        socket = io.connect(`${host}:${port}`, {
+          path
+        });
+        socket.on('connect', function(data) {
+          log('connected');
+        });
+        socket.on('my_event1', function(data) {
+          log('my_event1', data);
+        });
+        socket.on('my_event2', function(data) {
+          log('my_event2', data);
+        });
+        socket.on('my_event3', function(data) {
+          log('my_event3', data);
+        });
+        socket.on('disconnect', function(data) {
+          log('disconnected');
+        });
+      }
+    }
+
+    function disconnect() {
+      if (socket) {
+        socket.disconnect();
+      }
+
+      socket = null;
+    }
+
+    function log(...args) {
+      console.log(...args);
+      const i = document.createElement("p");
+      i.textContent = args;
+      document.getElementById('log').appendChild(i);
+    }
+  </script>
+</body>
+
+</html>
