@@ -19,7 +19,6 @@ services:
       - recipe-app-network
     hostname: mongo
     volumes:
-      - ./dockerEntryPoint/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - /Users/sebastian/Documents/mongoDb:/data/db
     restart: always
     environment:
