@@ -27,7 +27,6 @@
     onclick="connect(document.getElementById('host').value, document.getElementById('port').value, document.getElementById('path').value)">Connect</button>
   <button onclick="disconnect()">Disconnect</button>
   <div id="log"></div>
-  <!-- I'm using server's socket.io script file. You can also use socket.io-client npm package -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket;
@@ -48,6 +47,9 @@
         });
         socket.on('my_event3', function(data) {
           log('my_event3', data);
+        });
+        socket.on('status', function(data) {
+          log('status: ', data);
         });
         socket.on('disconnect', function(data) {
           log('disconnected');
