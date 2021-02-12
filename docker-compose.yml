@@ -1,0 +1,50 @@
+version: "3"
+services:
+  redis:
+    container_name: redis
+    image: redis:6.0.10
+    ports:
+      - "6379:6379"
+    networks:
+      - recipe-app-network
+    hostname: redis
+    restart: always
+    command: redis-server --requirepass ${REDIS_PWD}
+  mongo:
+    container_name: mongo
+    image: mongo:4.4.3
+    ports:
+      - "27017:27017"
+    networks:
+      - recipe-app-network
+    hostname: mongo
+    volumes:
+      - /Users/sebastian/Documents/mongoDb:/data/db
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PWD}
+  backend:
+    container_name: backend
+    depends_on:
+      - redis
+      - mongo
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - "3000:3000"
+    networks:
+      - recipe-app-network
+    env_file:
+      - ./.env
+    volumes:
+      - ./.env:/.env
+    restart: always
+    environment:
+      WAIT_HOSTS: mongo:27017, redis:6379
+      WAIT_HOSTS_TIMEOUT: 60
+      WAIT_HOST_CONNECT_TIMEOUT: 5
+networks:
+  recipe-app-network:
+    driver: bridge
