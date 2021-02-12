@@ -34,7 +34,10 @@
     function connect(host, port, path) {
       if (!socket) {
         socket = io.connect(`${host}:${port}`, {
-          path
+          path,
+          extraHeaders: {
+            "Custom-Auth-Headers": "testAuthHeader"
+          }
         });
         socket.on('connect', function(data) {
           log('connected');
