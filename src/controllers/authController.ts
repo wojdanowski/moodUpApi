@@ -7,11 +7,43 @@ import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { ApiKey, Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response, RequestHandler } from 'express';
-import { daysToMs, delKey } from './../utils/tools';
+import { daysToMs, delKey, verifyToken } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
 import { StatusMessages } from './../utils/StatusMessages';
 import { v4 as uuidV4 } from 'uuid';
 import bcryptjs from 'bcryptjs';
+import socketIo from 'socket.io';
+import { ExtendedError } from 'socket.io/dist/namespace';
+
+export const authSocketConnection = async (socket: socketIo.Socket, next: (err?: ExtendedError) => void): Promise<void> => {
+  const header = socket.handshake.headers['authorization'];
+  const token: string = header ? header.split(' ')[1] : '';
+
+  let decoded;
+  try {
+    decoded = await verifyToken(token, <string>process.env.JWT_SECRET);
+  } catch (err) {
+    console.log(err);
+  }
+  if (!decoded || !decoded.id) {
+    return next(new Error('Unauthorized'));
+  }
+
+  let user;
+  try {
+    user = await User.findById(decoded.id);
+  } catch (err) {
+    console.log(err);
+  }
+  if (!user) {
+    return next(new Error('Unauthorized'));
+  }
+  if (user.token !== token) {
+    return next(new Error('Token expired'));
+  }
+
+  return next();
+};
 
 const signToken = (id: string): string => {
   return jwt.sign({ id }, <string>process.env.JWT_SECRET, {
@@ -19,7 +51,7 @@ const signToken = (id: string): string => {
   });
 };
 
-const createSendToken = (user: IUserTemplate, statusCode: StatusCodes, res: Response): void => {
+const createSendToken = async (user: IUserTemplate, statusCode: StatusCodes, res: Response, next: NextFunction): Promise<void> => {
   const token: string = signToken(user._id);
   const expiration: Date = new Date(<number>Date.now() + <number>daysToMs(parseInt(<string>process.env.COOKIE_EXP_IN, 10)));
   const cookieOptions: CookieOptions = {
@@ -33,6 +65,15 @@ const createSendToken = (user: IUserTemplate, statusCode: StatusCodes, res: Resp
   const userWithoutPass: UserPublic = delKey<IUserTemplate, UserPublic>(user, 'password');
 
   setToCache(token, JSON.stringify(userWithoutPass), 'EX', parseInt(<string>process.env.REDIS_EXPIRES_IN, 10));
+
+  // Save token to db / overwrite the existing one.
+  try {
+    await User.findByIdAndUpdate(user._id, { token });
+  } catch (err) {
+    return next(new AppError('User not found', StatusCodes.NOT_FOUND));
+  }
+
+  // Emit logout event to all connected user that token expired
 
   res.status(statusCode).json({
     status: StatusMessages.Success,
@@ -96,7 +137,7 @@ export const signup = catchAsync(
       ...userDetails,
     });
     const newUser: IUserTemplate = newUserDoc.toObject();
-    createSendToken(newUser, StatusCodes.CREATED, res);
+    createSendToken(newUser, StatusCodes.CREATED, res, next);
   },
 );
 
@@ -109,7 +150,7 @@ export const login = catchAsync(
       return next(new AppError('Please provide email and password', StatusCodes.BAD_REQUEST));
     }
     //  2) Check if the user exist && if the password is correct
-    const user: IUserTemplate = await User.findOne({ email }, {}, { lean: true }).select('+password');
+    const user: IUserTemplate = await User.findOne({ email }, {}, { lean: true }).select(['+password', '-token']);
 
     if (!user) {
       return next(new AppError('Incorrect email or password', StatusCodes.BAD_REQUEST));
@@ -121,7 +162,7 @@ export const login = catchAsync(
     }
 
     //  3) If everything is OK, send token to client
-    createSendToken(user, StatusCodes.OK, res);
+    createSendToken(user, StatusCodes.OK, res, next);
   },
 );
 

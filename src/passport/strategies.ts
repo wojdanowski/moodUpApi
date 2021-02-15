@@ -2,19 +2,14 @@ import { Strategy as BearerStrategy, VerifyFunctions, VerifyFunctionWithRequest 
 import passportHeaderapikey from 'passport-headerapikey';
 import bcryptjs from 'bcryptjs';
 
-import jwt from 'jsonwebtoken';
 import { getFromCache, setToCache } from './../redis';
 import { StatusCodes } from 'http-status-codes';
 
 import User, { IUser, IUserTemplate } from './../models/userModel';
 import AppError from '../utils/appError';
 import { Request } from 'express';
+import { verifyToken , DecodedToken } from '../utils/tools';
 
-type DecodedToken = {
-  id: string;
-  iat: number;
-  exp: number;
-};
 
 const authorizeToken = async (...[req, accessToken, callback]: Parameters<VerifyFunctionWithRequest>): Promise<void> => {
   try {
@@ -25,15 +20,6 @@ const authorizeToken = async (...[req, accessToken, callback]: Parameters<Verify
         scope: '*',
       });
     }
-
-    const verifyToken = (token: string, secret: string): Promise<Record<string, unknown> | undefined> => {
-      return new Promise((resolve, reject) => {
-        jwt.verify(token, secret, (err, decoded) => {
-          if (err) return reject(new AppError(err.message, StatusCodes.UNAUTHORIZED));
-          return resolve(decoded as Record<string, unknown>);
-        });
-      });
-    };
 
     const decoded = await verifyToken(accessToken, <string>process.env.JWT_SECRET);
 

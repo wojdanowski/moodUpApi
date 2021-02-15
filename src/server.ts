@@ -10,6 +10,7 @@ process.on('uncaughtException', err => {
 dotenv.config({ path: './.env' });
 import app from './app';
 import { Server } from 'http';
+import { authSocketConnection } from './controllers/authController';
 
 mongoose.connect(<string>process.env.DATABASE, {
   useNewUrlParser: true,
@@ -22,6 +23,7 @@ const server: Server = app.listen(port);
 const io: socketIo.Server = new socketIo.Server();
 
 io.attach(server);
+io.use(authSocketConnection);
 
 io.on('connection', (socket: socketIo.Socket) => {
   console.log('connection');

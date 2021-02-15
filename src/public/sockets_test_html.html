@@ -23,24 +23,31 @@
     <p>Event</p>
     <input id="type" type="text" value="my_connect_event">
   </div>
+  <div style="display: flex;">
+    <p>Token</p>
+    <input id="token" type="text" value="my_connect_token">
+  </div>
   <button
-    onclick="connect(document.getElementById('host').value, document.getElementById('port').value, document.getElementById('path').value)">Connect</button>
+    onclick="connect(document.getElementById('host').value, document.getElementById('port').value, document.getElementById('path').value,document.getElementById('token').value)">Connect</button>
   <button onclick="disconnect()">Disconnect</button>
   <div id="log"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket;
 
-    function connect(host, port, path) {
+    function connect(host, port, path, token) {
       if (!socket) {
         socket = io.connect(`${host}:${port}`, {
           path,
           extraHeaders: {
-            "Custom-Auth-Headers": "testAuthHeader"
+            "Authorization": `Bearer ${token}`
           }
         });
         socket.on('connect', function(data) {
           log('connected');
+        });
+        socket.on('message', function(data) {
+          log(message, 'data');
         });
         socket.on('my_event1', function(data) {
           log('my_event1', data);
