@@ -20,15 +20,12 @@ mongoose.connect(<string>process.env.DATABASE, {
 
 const port = process.env.PORT || 3000;
 const server: Server = app.listen(port);
-const io: socketIo.Server = new socketIo.Server();
+export const io: socketIo.Server = new socketIo.Server();
 
 io.attach(server);
 io.use(authSocketConnection);
 
 io.on('connection', (socket: socketIo.Socket) => {
-  console.log('connection');
-  socket.emit('status', 'Hello from Socket.io');
-
   socket.on('disconnect', () => {
     console.log('client disconnected');
   });

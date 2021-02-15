@@ -14,6 +14,7 @@ import { v4 as uuidV4 } from 'uuid';
 import bcryptjs from 'bcryptjs';
 import socketIo from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';
+import { io } from './../server';
 
 export const authSocketConnection = async (socket: socketIo.Socket, next: (err?: ExtendedError) => void): Promise<void> => {
   const header = socket.handshake.headers['authorization'];
@@ -25,6 +26,7 @@ export const authSocketConnection = async (socket: socketIo.Socket, next: (err?:
   } catch (err) {
     console.log(err);
   }
+
   if (!decoded || !decoded.id) {
     return next(new Error('Unauthorized'));
   }
@@ -42,6 +44,7 @@ export const authSocketConnection = async (socket: socketIo.Socket, next: (err?:
     return next(new Error('Token expired'));
   }
 
+  socket.join(`${user._id}`);
   return next();
 };
 
@@ -66,14 +69,13 @@ const createSendToken = async (user: IUserTemplate, statusCode: StatusCodes, res
 
   setToCache(token, JSON.stringify(userWithoutPass), 'EX', parseInt(<string>process.env.REDIS_EXPIRES_IN, 10));
 
-  // Save token to db / overwrite the existing one.
   try {
     await User.findByIdAndUpdate(user._id, { token });
   } catch (err) {
     return next(new AppError('User not found', StatusCodes.NOT_FOUND));
   }
 
-  // Emit logout event to all connected user that token expired
+  io.to(`${userWithoutPass._id}`).emit('LOGOUT');
 
   res.status(statusCode).json({
     status: StatusMessages.Success,
