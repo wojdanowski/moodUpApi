@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import * as authController from './../controllers/authController';

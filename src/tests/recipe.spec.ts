@@ -8,7 +8,7 @@ const BASE_URL: string = '/api/v1/recipes';
 const RECIPE_ID_NOT_EXISTENT: string = '5fd790724a7ab216c8920315';
 const RECIPE_ID_WRONG: string = 'testId';
 
-describe.skip('Recipes', (): void => {
+describe('Recipes', (): void => {
   let dummyUser: TestUser;
   let dummyRecipe: IRecipeTemplate;
   const EXPECTED_RECIPE_COUNT: number = 2;
