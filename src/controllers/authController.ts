@@ -7,46 +7,11 @@ import AppError from './../utils/appError';
 import { StatusCodes } from 'http-status-codes';
 import { ApiKey, Bearer } from './../passport/strategies';
 import { CookieOptions, NextFunction, Request, Response, RequestHandler } from 'express';
-import { daysToMs, delKey, verifyToken } from './../utils/tools';
+import { daysToMs, delKey } from './../utils/tools';
 import { setToCache, delFromCache } from './../redis';
 import { StatusMessages } from './../utils/StatusMessages';
 import { v4 as uuidV4 } from 'uuid';
 import bcryptjs from 'bcryptjs';
-import socketIo from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';
-import { io } from './../server';
-
-export const authSocketConnection = async (socket: socketIo.Socket, next: (err?: ExtendedError) => void): Promise<void> => {
-  const header = socket.handshake.headers['authorization'];
-  const token: string = header ? header.split(' ')[1] : '';
-
-  let decoded;
-  try {
-    decoded = await verifyToken(token, <string>process.env.JWT_SECRET);
-  } catch (err) {
-    console.log(err);
-  }
-
-  if (!decoded || !decoded.id) {
-    return next(new Error('Unauthorized'));
-  }
-
-  let user;
-  try {
-    user = await User.findById(decoded.id);
-  } catch (err) {
-    console.log(err);
-  }
-  if (!user) {
-    return next(new Error('Unauthorized'));
-  }
-  if (user.token !== token) {
-    return next(new Error('Token expired'));
-  }
-
-  socket.join(`${user._id}`);
-  return next();
-};
 
 const signToken = (id: string): string => {
   return jwt.sign({ id }, <string>process.env.JWT_SECRET, {
@@ -75,7 +40,7 @@ const createSendToken = async (user: IUserTemplate, statusCode: StatusCodes, res
     return next(new AppError('User not found', StatusCodes.NOT_FOUND));
   }
 
-  io.to(`${userWithoutPass._id}`).emit('LOGOUT');
+  // io.to(`${userWithoutPass._id}`).emit('LOGOUT');
 
   res.status(statusCode).json({
     status: StatusMessages.Success,

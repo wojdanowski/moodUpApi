@@ -1,6 +1,5 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from './../server';
 import * as authController from './../controllers/authController';
 import sinon from 'sinon';
 import * as mockDb from './mockDb';
@@ -14,6 +13,8 @@ const originalIsAuthenticated = authController.isAuthenticated;
 const stubbedIsAuthenticated = sinon.stub(authController, 'isAuthenticated');
 const originalIsAuthenticatedApi = authController.isAuthenticatedApi;
 const stubbedIsAuthenticatedApi = sinon.stub(authController, 'isAuthenticatedApi');
+
+import app from './../server';
 
 stubbedIsAuthenticated.restore();
 stubbedIsAuthenticatedApi.restore();
