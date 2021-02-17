@@ -22,7 +22,7 @@ const authorizeToken = async (...[req, accessToken, callback]: Parameters<Verify
 
     const decoded: DecodedToken = await verifyToken(accessToken, <string>process.env.JWT_SECRET);
 
-    if (!decoded || !decoded.id) {
+    if (!decoded) {
       return callback(null, false, { scope: '*' });
     }
 
