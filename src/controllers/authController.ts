@@ -12,6 +12,7 @@ import { setToCache, delFromCache } from './../redis';
 import { StatusMessages } from './../utils/StatusMessages';
 import { v4 as uuidV4 } from 'uuid';
 import bcryptjs from 'bcryptjs';
+import socket from './../socket/socket';
 
 const signToken = (id: string): string => {
   return jwt.sign({ id }, <string>process.env.JWT_SECRET, {
@@ -39,8 +40,6 @@ const createSendToken = async (user: IUserTemplate, statusCode: StatusCodes, res
   } catch (err) {
     return next(new AppError('User not found', StatusCodes.NOT_FOUND));
   }
-
-  // io.to(`${userWithoutPass._id}`).emit('LOGOUT');
 
   res.status(statusCode).json({
     status: StatusMessages.Success,
@@ -130,6 +129,10 @@ export const login = catchAsync(
 
     //  3) If everything is OK, send token to client
     createSendToken(user, StatusCodes.OK, res, next);
+    const connection = socket.connection();
+    if (connection) {
+      connection.emit('LOGOUT', {}, `${user._id}`);
+    }
   },
 );
 
