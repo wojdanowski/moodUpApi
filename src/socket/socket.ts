@@ -1,6 +1,6 @@
 import { Server } from 'http';
 import socketIo from 'socket.io';
-import User, { IUser } from '../models/userModel';
+import User from '../models/userModel';
 import { verifyToken } from '../utils/tools';
 import { ExtendedError } from 'socket.io/dist/namespace';
 
@@ -25,7 +25,7 @@ export class Socket {
           if (!decoded || !decoded.id) {
             return next(new Error('Unauthorized'));
           }
-          const user: IUser | null = await User.findById(decoded.id);
+          const user = await User.findById(decoded.id);
 
           if (!user) {
             return next(new Error('Unauthorized'));

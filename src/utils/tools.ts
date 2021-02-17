@@ -24,7 +24,9 @@ export type DecodedToken = {
 export const verifyToken = (token: string, secret: string): Promise<DecodedToken> => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, secret, (err, decoded) => {
-      if (err) return reject(new AppError(err.message, StatusCodes.UNAUTHORIZED));
+      if (err) {
+        return reject(new AppError(err.message, StatusCodes.UNAUTHORIZED));
+      }
       return resolve(decoded as DecodedToken);
     });
   });
