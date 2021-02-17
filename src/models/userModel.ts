@@ -10,6 +10,7 @@ export interface IUserTemplate {
   role: string;
   _id?: any;
   apiKey?: string;
+  token?: string;
 }
 
 export interface IUser extends mongoose.Document, IUserTemplate {}
@@ -57,6 +58,10 @@ const userSchema = new mongoose.Schema({
   },
   apiKey: {
     type: String,
+  },
+  token: {
+    type: String,
+    minlength: 160,
   },
 });
 

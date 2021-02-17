@@ -19,7 +19,7 @@ function terminate(server: Server, options = { coredump: false, timeout: 500 }):
     }
 
     server.close(exit);
-    setTimeout(exit, options.timeout).unref();
+    setTimeout(exit, options.timeout);
   };
 }
 

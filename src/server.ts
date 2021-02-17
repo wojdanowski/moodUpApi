@@ -9,6 +9,7 @@ process.on('uncaughtException', err => {
 dotenv.config({ path: './.env' });
 import app from './app';
 import { Server } from 'http';
+import socket from './socket/socket';
 
 mongoose.connect(<string>process.env.DATABASE, {
   useNewUrlParser: true,
@@ -17,8 +18,9 @@ mongoose.connect(<string>process.env.DATABASE, {
 });
 
 const port = process.env.PORT || 3000;
-
 const server: Server = app.listen(port);
+
+socket.connect(server);
 
 const exitHandler = terminate(server, {
   coredump: false,

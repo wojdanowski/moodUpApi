@@ -3,10 +3,10 @@ import { catchAsync } from '../utils/catchAsync';
 import path from 'path';
 import { CONTENT_SECURITY_POLICY } from './../utils/headers';
 
-const getApiDocumentation = catchAsync(
+const getSocketTestPage = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    res.sendFile(path.join(__dirname, '../public/index.html'), { headers: CONTENT_SECURITY_POLICY });
+    res.sendFile(path.join(__dirname, '../public/sockets_test_html.html'), { headers: CONTENT_SECURITY_POLICY });
   },
 );
 
-export { getApiDocumentation };
+export { getSocketTestPage };
