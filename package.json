@@ -6,8 +6,8 @@
   "scripts": {
     "start": "ts-node ./src/server.ts",
     "start:debug": "node --nolazy --inspect=38009 -r ts-node/register ./src/server",
-    "test": "ts-mocha ./src/tests/*.spec.ts --exit --timeout 60000",
     "start:watch": "nodemon --config './nodemon.json'",
+    "test": "ts-mocha ./src/tests/*.spec.ts --exit --timeout 60000",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"**/*.ts\"",
     "format:check": "prettier --check \"**/*.ts\"",
