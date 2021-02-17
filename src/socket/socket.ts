@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import socketIo from 'socket.io';
 import User, { IUser } from '../models/userModel';
-import { DecodedToken, verifyToken } from '../utils/tools';
+import { verifyToken } from '../utils/tools';
 import { ExtendedError } from 'socket.io/dist/namespace';
 
 let connection: Socket;
@@ -20,29 +20,26 @@ export class Socket {
         const header = socket.handshake.headers['authorization'];
         const token: string = header ? header.split(' ')[1] : '';
 
-        let decoded: DecodedToken | undefined;
         try {
-          decoded = await verifyToken(token, <string>process.env.JWT_SECRET);
+          const decoded = await verifyToken(token, <string>process.env.JWT_SECRET);
+          if (!decoded || !decoded.id) {
+            return next(new Error('Unauthorized'));
+          }
+          const user: IUser | null = await User.findById(decoded.id);
+
+          if (!user) {
+            return next(new Error('Unauthorized'));
+          }
+          if (user.token !== token) {
+            return next(new Error('Token expired'));
+          }
+
+          socket.join(`${user._id}`);
+
+          return next();
         } catch (err) {
-          console.log(err);
-        }
-
-        if (!decoded || !decoded.id) {
           return next(new Error('Unauthorized'));
         }
-
-        const user: IUser | null = await User.findById(decoded.id);
-
-        if (!user) {
-          return next(new Error('Unauthorized'));
-        }
-        if (user.token !== token) {
-          return next(new Error('Token expired'));
-        }
-
-        socket.join(`${user._id}`);
-
-        return next();
       },
     );
 

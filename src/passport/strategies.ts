@@ -8,8 +8,7 @@ import { StatusCodes } from 'http-status-codes';
 import User, { IUser, IUserTemplate } from './../models/userModel';
 import AppError from '../utils/appError';
 import { Request } from 'express';
-import { verifyToken , DecodedToken } from '../utils/tools';
-
+import { verifyToken, DecodedToken } from '../utils/tools';
 
 const authorizeToken = async (...[req, accessToken, callback]: Parameters<VerifyFunctionWithRequest>): Promise<void> => {
   try {
@@ -21,9 +20,9 @@ const authorizeToken = async (...[req, accessToken, callback]: Parameters<Verify
       });
     }
 
-    const decoded = await verifyToken(accessToken, <string>process.env.JWT_SECRET);
+    const decoded: DecodedToken = await verifyToken(accessToken, <string>process.env.JWT_SECRET);
 
-    if (!decoded || !(<DecodedToken>decoded).id) {
+    if (!decoded || !decoded.id) {
       return callback(null, false, { scope: '*' });
     }
 
