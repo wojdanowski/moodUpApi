@@ -48,7 +48,7 @@ describe('Socket tests', (): void => {
   describe('socket.io connection', (): void => {
     it('should connect', async function (): Promise<void> {
       const socket = await initConnection(dummyUser.token);
-      chai.assert(!(socket instanceof Error), 'Connection not established');
+      chai.assert(socket.connected, 'Connection not established');
 
       destroySocket(socket);
     });
