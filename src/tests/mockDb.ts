@@ -61,7 +61,6 @@ const populateDB = async (): Promise<void> => {
 
 const getUserData = async (): Promise<TestUser> => {
   const foundUser: IUserTemplate = (await User.find())[0].toObject();
-  // const token: string = jwt.sign({ id: foundUser._id }, process.env.JWT_SECRET);
 
   return {
     ...foundUser,

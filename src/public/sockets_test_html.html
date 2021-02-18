@@ -42,6 +42,10 @@
             "Authorization": `Bearer ${token}`
           }
         });
+        socket.on('connect_error', function() {
+          console.log(`Unauthorized`)
+         
+        });
         socket.on('connect', function(data) {
           log('connected');
         });
