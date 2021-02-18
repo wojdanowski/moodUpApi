@@ -10,8 +10,8 @@ describe('Socket tests', (): void => {
     dummyUser = await getUserData();
   });
 
-  describe('socket.io connection', (): void => {
-    const connectClient = (token: string): SocketIOClient.Socket => {
+  const initConnection = (token: string): Promise<SocketIOClient.Socket> => {
+    return new Promise((resolve, reject) => {
       const socket = io.connect(serverAddress, {
         transportOptions: {
           polling: {
@@ -21,25 +21,43 @@ describe('Socket tests', (): void => {
           },
         },
       });
-      return socket;
-    };
-
-    it('should send receive connect event', function (done): void {
-      const socket: SocketIOClient.Socket = connectClient(dummyUser.token);
-      socket.on('connect', function () {
-        chai.assert(socket.connect, 'Client not connected');
-        socket.disconnect();
-        done();
+      socket.on('connect', () => {
+        resolve(socket);
       });
+      socket.on('connect_error', () => {
+        resolve(socket);
+      });
+
+      setTimeout(() => {
+        resolve(socket);
+      }, 5000);
+    });
+  };
+
+  const destroySocket = socket => {
+    return new Promise((resolve, reject) => {
+      if (socket.connected) {
+        socket.disconnect();
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  };
+
+  describe('socket.io connection', (): void => {
+    it('should connect', async function (): Promise<void> {
+      const socket = await initConnection(dummyUser.token);
+      chai.assert(!(socket instanceof Error), 'Connection not established');
+
+      destroySocket(socket);
     });
 
-    it('should send connect_error event', function (done): void {
-      const socket: SocketIOClient.Socket = connectClient('this is wrong token');
-      socket.on('connect_error', function (err: Error) {
-        chai.assert(socket.connect, 'Client not connected');
-        socket.disconnect();
-        done();
-      });
+    it('should not connect', async function (): Promise<void> {
+      const socket = await initConnection('this is wrong token');
+      chai.assert(!socket.connected, 'Client should not be connected');
+
+      destroySocket(socket);
     });
   });
 });
