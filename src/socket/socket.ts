@@ -19,14 +19,14 @@ export class Socket {
       async (socket: socketIo.Socket, next: (err?: ExtendedError) => void): Promise<void> => {
         const header = socket.handshake.headers['authorization'];
         const token: string = header ? header.split(' ')[1] : '';
-
+        console.log(`AUTHORIZE`);
+        console.log(socket.handshake.headers);
         try {
           const decoded = await verifyToken(token, <string>process.env.JWT_SECRET);
           if (!decoded || !decoded.id) {
             return next(new Error('Unauthorized'));
           }
           const user = await User.findById(decoded.id);
-
           if (!user) {
             return next(new Error('Unauthorized'));
           }
@@ -44,12 +44,19 @@ export class Socket {
     );
 
     io.on('connection', (socket: socketIo.Socket) => {
+      console.log('client connected on backend');
+      this.socket = socket;
+      socket.emit('hello', { data: 'hello data' });
+    });
+    io.on('disconnect', (socket: socketIo.Socket) => {
       console.log('client disconnected');
       this.socket = socket;
     });
   }
 
-  emit(event: string, data?: Record<string, unknown>, room?: string): void {
+  emit(event: string, data?: Record<string, unknown> | string, room?: string): void {
+    console.log(`Emitting from backend`);
+    console.log(`event: ${event}, data: ${data}`);
     if (this.socket) {
       if (room) {
         this.socket.to(room).emit(event, data);
@@ -62,6 +69,7 @@ export class Socket {
     if (!connection) {
       connection = new Socket();
       connection.connect(server);
+      console.log(`create new socket`);
     }
   }
   static getConnection(): Socket | null {

@@ -34,11 +34,13 @@ const dummyUser: IUserTemplate = {
 const populateDB = async (): Promise<void> => {
   const userDoc = await User.create({ ...dummyUser });
   const apiKey: string = `${userDoc._id}${apiKeyChain}`;
+  const token: string = jwt.sign({ id: userDoc._id }, process.env.JWT_SECRET);
   const cryptKey: string = await bcryptjs.hash(apiKey, <string>process.env.SALT);
   const userWihApiKeyDoc = await User.findByIdAndUpdate(
     userDoc._id,
     {
       apiKey: cryptKey,
+      token,
     },
     { new: true },
   );
@@ -59,12 +61,12 @@ const populateDB = async (): Promise<void> => {
 
 const getUserData = async (): Promise<TestUser> => {
   const foundUser: IUserTemplate = (await User.find())[0].toObject();
-  const token: string = jwt.sign({ id: foundUser._id }, process.env.JWT_SECRET);
+  // const token: string = jwt.sign({ id: foundUser._id }, process.env.JWT_SECRET);
 
   return {
     ...foundUser,
     _id: foundUser._id.toString(),
-    token,
+    token: foundUser.token,
     apiKey: `${foundUser._id}${apiKeyChain}`,
   };
 };

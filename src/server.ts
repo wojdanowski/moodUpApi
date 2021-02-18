@@ -21,6 +21,7 @@ const port = process.env.PORT || 3000;
 const server: Server = app.listen(port);
 
 socket.connect(server);
+console.log(`connecting in server`);
 
 const exitHandler = terminate(server, {
   coredump: false,
