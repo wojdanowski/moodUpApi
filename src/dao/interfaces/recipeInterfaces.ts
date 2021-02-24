@@ -11,7 +11,7 @@ export interface IRecipeTemplate {
   prepTime: string;
   prepSteps: Array<string>;
   ingredients: Array<Ingredients>;
-  author: mongooseTypes.ObjectId | string;
+  author: mongooseTypes.ObjectId;
   image: string;
   _id?: any;
 }
