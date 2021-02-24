@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import User, { IUserTemplate } from './../models/userModel';
-import Recipe, { IRecipe, IRecipeTemplate } from './../models/recipeModel';
+import Recipe, { IRecipe } from './../models/recipeModel';
+import { IRecipeTemplate } from './../dao/interfaces/recipeInterfaces';
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 

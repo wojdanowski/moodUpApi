@@ -1,7 +1,7 @@
 import { chai, app, stubbedIsAuthenticatedApi } from './test_config';
 import { StatusCodes } from 'http-status-codes';
 import { getUserData, getDummyRecipe, TestUser } from './mockDb';
-import { IRecipeTemplate } from '../models/recipeModel';
+import { IRecipeTemplate } from './../dao/interfaces/recipeInterfaces';
 import { Request, Response, NextFunction } from 'express';
 
 const BASE_URL: string = '/api/v1/recipes';

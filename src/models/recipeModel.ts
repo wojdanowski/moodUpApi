@@ -1,21 +1,6 @@
 import mongoose from 'mongoose';
 import { IUser } from './userModel';
-
-interface Ingredients {
-  name: string;
-  quantity: string;
-}
-
-export interface IRecipeTemplate {
-  name: string;
-  shortDescription: string;
-  prepTime: string;
-  prepSteps: Array<string>;
-  ingredients: Array<Ingredients>;
-  author: mongoose.Types.ObjectId | string;
-  image: string;
-  _id?: any;
-}
+import { IRecipeTemplate } from './../dao/interfaces/recipeInterfaces';
 
 export interface IRecipe extends mongoose.Document, IRecipeTemplate {
   author: IUser['_id'];
