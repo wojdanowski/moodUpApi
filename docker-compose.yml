@@ -24,11 +24,31 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PWD}
+  mysql:
+    container_name: mysql
+    image: mysql:8.0.23
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - /Users/sebastian/Documents/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - recipe-app-network
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
   backend:
     container_name: backend
     depends_on:
       - redis
       - mongo
+      - mysql
     build:
       context: .
       dockerfile: DockerFile
