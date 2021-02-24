@@ -1,16 +1,16 @@
 import { Document, DocumentQuery } from 'mongoose';
 
-interface IQueryOptions {
+export interface IQueryOptions {
   page?: number;
   limit?: number;
   search?: string;
 }
 
-export default class APIFeatures {
-  public query: DocumentQuery<Document[], Document>;
+export default class APIFeatures<T extends Document> {
+  public query: DocumentQuery<T[], T>;
   private options: IQueryOptions;
 
-  public constructor(query: DocumentQuery<Document[], Document>, options: IQueryOptions) {
+  public constructor(query: DocumentQuery<T[], T>, options: IQueryOptions) {
     this.query = query;
     this.options = options;
   }
@@ -26,9 +26,9 @@ export default class APIFeatures {
   public search(): this {
     if (this.options.search) {
       const phrase = this.options.search;
-      this.query = this.query.find({
+      this.query = (<DocumentQuery<Document[], Document>>this.query).find({
         name: new RegExp(phrase, 'i'),
-      });
+      }) as DocumentQuery<T[], T>;
     }
 
     return this;
